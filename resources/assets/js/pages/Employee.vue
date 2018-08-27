@@ -1,11 +1,41 @@
 <template>
   <div class="content">
+    <div class="employee">
+      <nuevo @new="addEmployee"></nuevo>
+        <div class="tableFilters">
+            <input class="input form-control pull-left" type="text" v-model="search" placeholder="Buscar ..."
+                   @input="resetPagination()">
 
-      <div>
-    <md-dialog :md-active.sync="showDialog">
+            <div class="control pull-right">
+                <div class="select">
+                    <select v-model="length" @change="resetPagination()" class="form-control">
+                        <option value="5">5</option>
+                        <option value="10">10</option>
+                        <option value="20">20</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <br>
+      <datatable :columns="columns" :sortKey="sortKey" :sortOrders="sortOrders" @sort="sortBy">
+          <TableEmployee
+            v-for="(employee, index) in paginated"
+            :key="employee.id"
+            :employee="employee"
+            @delete="deleteEmployee(employee)"
+            @actualizar="actualizarEmployee(employee)">
+          </TableEmployee>
+      </datatable>
+      <br>
+        <pagination :pagination="pagination" :client="true" :filtered="filteredProjects"
+                    @prev="--pagination.currentPage"
+                    @next="++pagination.currentPage">
+        </pagination>
+  </div>
+  <md-dialog :md-active.sync="showDialog">
       <md-dialog-title>Datos del Funcionario</md-dialog-title>
 
-      <form novalidate class="md-layout" v-on:submit.prevent="nuevoEmployee()">
+      <form novalidate class="md-layout" v-on:submit.prevent="editEmployee()">
           <div class="md-layout-item md-small-size-100 md-size-100">
             <md-field>
               <label>Nombre Completo</label>
@@ -18,7 +48,7 @@
           <div class="md-layout-item md-small-size-100 md-size-100">
             <md-field>
               <label>RUT</label>
-              <md-input v-model="rut" type="text" oninput="checkRut(this)" onblur="formato_rut(this)"></md-input>
+              <md-input v-model="rut" type="text" oninput="checkRut(this)"></md-input>
               <div class="error" v-if="!$v.rut.required">Campo Obligatorio</div>
               <div class="error" v-if="!$v.rut.minLength">El nombre debe tener a lo menos {{$v.rut.$params.minLength.min}} letras.</div>
             </md-field>
@@ -47,35 +77,16 @@
         <md-button class="md-primary close" @click="showDialog = false">Close</md-button>
       </md-dialog-actions>
     </md-dialog>
-  </div>
-<md-button class="md-primary" @click="showDialog = true"> Nuevo </md-button>
-<br>
-    <div class="md-layout">
-      
-
-        <datatable :columns="columns" :sortKey="sortKey" :sortOrders="sortOrders" @sort="sortBy">
-          <TableEmployee
-            v-for="(employee, index) in paginated"
-            :key="employee.id"
-            :employee="employee"
-            @delete="deleteConsejo(employee)"
-            @actualizar="actualizarConsejo(employee)">
-        </TableEmployee>
-        </datatable>
-
-
-    </div>
-
-  </div>
+</div>
 </template>
-
 <script>
 import { required, minLength, between, email } from 'vuelidate/lib/validators';
-import Datatable from '../../Datatable.vue';
-import Pagination from '../../Pagination.vue';
+import Datatable from '../Datatable.vue';
+import Pagination from '../Pagination.vue';
 
 import {
   TableEmployee,
+  NewEmployee,
   OrderedTable
 } from '@/components'
 
@@ -100,13 +111,14 @@ export default{
         });
         return {
           employees:[],
+          employee:'',
           columns: columns,
-          establecimiento: '',
           sortKey: '',
           sortOrders: sortOrders,
-          length: 10,
+          length: 5,
           search: '',
           showDialog: false,
+          id:0,
           nombre:'',
           rut:'',
           correo:'',
@@ -146,10 +158,68 @@ export default{
     OrderedTable,
     TableEmployee,
     datatable: Datatable, 
-    pagination: Pagination
+    pagination: Pagination,
+    nuevo: NewEmployee
   },
-          methods: {
-            getEmployees(url = '/employees') {
+  methods: {
+        addEmployee(empleado) {
+            this.employees.push(empleado);
+        },
+        deleteEmployee(empleado){
+            var index = this.employees.indexOf(empleado);
+            this.employees.splice(index, 1);
+        },
+        actualizarEmployee(empleado){
+          this.employee = empleado;
+          this.nombre = empleado.nombre;
+          this.rut = empleado.rut;
+          this.correo = empleado.correo;
+          this.codigo = empleado.codigo;
+          this.id = empleado.id;
+          this.showDialog = true;
+        },
+        editEmployee(){
+          const params = {
+          id: this.id,
+          nombre: this.nombre,
+          rut: this.rut,
+          correo: this.correo,
+          codigo: this.codigo,
+        };
+          var index = this.employees.indexOf(this.employee);
+          axios.put(`/employees/${this.id}`, params).then((response) => {
+              this.employee = response.data;
+              this.employees[index] = this.employee;
+              this.getEmployees();
+              this.id = 0;
+              this.nombre = "";
+              this.rut = "";
+              this.correo = "";
+              this.codigo = "";
+              this.showDialog = false;
+              if(this.employee.save){
+                this.$notify(
+                  {
+                    message: 'Se actualizó correctamente el funcionario:<b> ' + this.employee.nombre + '</b>',
+                    icon: 'done',
+                    horizontalAlign: 'right',
+                    verticalAlign: 'top',
+                    type: 'success'
+                  })
+              }else{
+                this.$notify(
+                  {
+                    message: 'El registro no pudo ser actualizado. Por favor revise si los datos ingresados son correctos.',
+                    icon: 'error',
+                    horizontalAlign: 'right',
+                    verticalAlign: 'top',
+                    type: 'danger'
+                  })
+              }
+
+          });
+        },
+        getEmployees(url = '/employees') {
                 axios.get(url, {params: this.tableData})
                     .then(response => {
                         this.employees = response.data;
@@ -159,27 +229,27 @@ export default{
                         console.log(errors);
                     });
             },
-            paginate(array, length, pageNumber) {
+        paginate(array, length, pageNumber) {
                 this.pagination.from = array.length ? ((pageNumber - 1) * length) + 1 : ' ';
                 this.pagination.to = pageNumber * length > array.length ? array.length : pageNumber * length;
                 this.pagination.prevPage = pageNumber > 1 ? pageNumber : '';
                 this.pagination.nextPage = array.length > this.pagination.to ? pageNumber + 1 : '';
                 return array.slice((pageNumber - 1) * length, pageNumber * length);
             },
-            resetPagination() {
+        resetPagination() {
                 this.pagination.currentPage = 1;
                 this.pagination.prevPage = '';
                 this.pagination.nextPage = '';
             },
-            sortBy(key) {
+        sortBy(key) {
                 this.resetPagination();
                 this.sortKey = key;
                 this.sortOrders[key] = this.sortOrders[key] * -1;
             },
-            getIndex(array, key, value) {
+        getIndex(array, key, value) {
                 return array.findIndex(i => i[key] == value);
             },
-            nuevoEmployee(){
+        nuevoEmployee(){
             if (!this.$v.$invalid) {
                 const params = {
                 nombre:this.nombre,
@@ -204,7 +274,7 @@ export default{
                       verticalAlign: 'top',
                       type: 'success'
                     })
-                    //this.$emit('new', empleado);
+                    this.$emit('new', empleado);
                 }else{
                   this.$notify(
                     {
@@ -259,19 +329,12 @@ export default{
 </script>
 
 <style lang="scss" scoped>
-  .md-layout {
+  .employee {
     padding-left: 20px;
     padding-right: 20px; 
   }
-  .md-dialog-actions{
-        padding-right: 20px; 
+  .md-dialog{
+        padding:20px;
   }
 
-  .close{
-    display:none;
-  }
-
-  .error{
-    color:red;
-  }
 </style>

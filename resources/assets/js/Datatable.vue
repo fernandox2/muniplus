@@ -1,10 +1,8 @@
 <template>
     <div>
-    <md-table>
+        <md-table>
 
-                <md-table-head v-for="column in columns" :key="column.name" @click="$emit('sort', column.name)"
-                    :class="sortKey === column.name ? (sortOrders[column.name] > 0 ? 'sorting_asc' : 'sorting_desc') : 'sorting'"
-                    :style="'width:'+column.width+';'+'cursor:pointer;'">
+                <md-table-head class="table-header text-center" v-for="column in columns" :key="column.name" @click="$emit('sort', column.name)">
                     {{column.label}}
                 </md-table-head>
 
@@ -18,3 +16,13 @@
         props: ['columns', 'sortKey', 'sortOrders']
     };
 </script>
+
+<style lang="scss" scoped>
+  .table-header {
+    padding-top:10px;
+    padding-bottom:10px;
+    background-color:purple;
+    color: white !important;
+  }
+
+</style>

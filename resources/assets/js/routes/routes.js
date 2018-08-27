@@ -2,12 +2,14 @@ import DashboardLayout from '@/pages/Layout/DashboardLayout.vue'
 
 import Dashboard from '@/pages/Dashboard.vue'
 import UserProfile from '@/pages/UserProfile.vue'
-import Employee from '@/pages/Employee/Employee.vue'
 import TableList from '@/pages/TableList.vue'
 import Typography from '@/pages/Typography.vue'
 import Icons from '@/pages/Icons.vue'
 import Maps from '@/pages/Maps.vue'
 import Notifications from '@/pages/Notifications.vue'
+
+import Employee from '@/pages/Employee.vue'
+import Departament from '@/pages/Departament.vue'
 
 const routes = [
   {
@@ -24,6 +26,11 @@ const routes = [
         path: 'employee',
         name: 'Administración de Funcionarios',
         component: Employee
+      },
+      {
+        path: 'departament',
+        name: 'Administración de Departamentos',
+        component: Departament
       },
       {
         path: 'user',

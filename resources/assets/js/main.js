@@ -3,8 +3,10 @@ import "./bootstrap";
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue'
 import Vuelidate from 'vuelidate'
+import VueResource from 'vue-resource'
 import VueRouter from 'vue-router'
 import App from './App'
+
 
 // router setup
 import routes from './routes/routes'
@@ -31,6 +33,7 @@ Vue.use(GlobalComponents)
 Vue.use(GlobalDirectives)
 Vue.use(Notifications)
 Vue.use(Vuelidate)
+Vue.use(VueResource)
 
 // global library setup
 Object.defineProperty(Vue.prototype, '$Chartist', {

@@ -8,6 +8,10 @@
         <md-icon>dashboard</md-icon>
         <p>Dashboard</p>
       </sidebar-link>
+      <sidebar-link to="/departament">
+        <md-icon>business</md-icon>
+        <p>Departamentos</p>
+      </sidebar-link>
       <sidebar-link to="/employee">
         <md-icon>person</md-icon>
         <p>Funcionarios</p>

@@ -21,3 +21,5 @@ Route::get('/home', 'HomeController@index')->name('home');
 
 Route::apiResource('/employees','EmployeeController');
 
+Route::apiResource('/departaments','DepartamentController');
+
