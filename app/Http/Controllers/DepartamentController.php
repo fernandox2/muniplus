@@ -6,25 +6,20 @@ use Illuminate\Http\Request;
 
 class DepartamentController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        //
-    }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
+
+
     public function store(Request $request)
     {
-        //
+        // Si trae imagen
+        if($request->image <> ""){
+            $data = base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $request->image));
+            $nombre = uniqid("logo");
+            $filepath = "images/logos/". $nombre .".".$request->extension;
+            file_put_contents($filepath,$data);
+            return $data;
+        }
+        return null;
     }
 
     /**

@@ -1,11 +1,10 @@
 <template>
   <div class="content">
 
-  <div>
     <md-dialog :md-active.sync="showDialog">
-      <md-dialog-title>Datos del Departamento</md-dialog-title>
-
-      <form novalidate class="md-layout" v-on:submit.prevent="nuevoEmployee()">
+      <md-dialog-title class="text-center">Datos del Departamento<br><img :src="image" class="img-responsive"></md-dialog-title>
+      
+     <form novalidate class="md-layout" enctype="multipart/form-data" v-on:submit.prevent="newDepartament()">
           <div class="md-layout-item md-small-size-100 md-size-100">
             <md-field>
               <label>Nombre</label>
@@ -17,20 +16,35 @@
 
           <div class="md-layout-item md-small-size-100 md-size-100">
             <md-field>
-              <FileUpload></FileUpload>
+              <label>Only images</label>
+              <md-file v-model="image" accept="image/*" @change="onFileChange"/>
             </md-field>
           </div>
-
           <md-button class="md-primary close" @click="showDialog = false">Close</md-button>
           <md-button type="submit" class="md-raised md-success">Guardar</md-button>
         </form>
     </md-dialog>
-  </div>
 
 <md-button class="md-primary" @click="showDialog = true"><md-icon>business</md-icon> Nuevo Departamento</md-button>
   </div>
 </template>
+<style scoped>
+    img{
+        max-height: 150px;
+        margin:0px auto;
+    }
 
+      .card-expansion {
+    height: 480px;
+  }
+
+  .md-card {
+    width: 320px;
+    margin: 4px;
+    display: inline-block;
+    vertical-align: top;
+  }
+</style>
 <script>
 import { required, minLength } from 'vuelidate/lib/validators'
 import FileUpload from '../FileUpload.vue'
@@ -40,7 +54,8 @@ export default{
       return {
           showDialog: false,
           nombre:'',
-          rut:'',
+          image: null,
+          extension: '',
         }
     },
       validations: {
@@ -53,53 +68,44 @@ export default{
     FileUpload
   },
       methods: {
-            onFileSelected (event) {
-               const file = event.target.files[0];
-               const formData = new FormData($("#my-form")[0]);
-               //const formData = new FormData();
-               //formData.append("my-file", file);
-               Vue.http.post(`url-to-serve`, formData)
-                .then(res => {
-                    //todo ok
-                },
-                error => {
-                    //todo mal :P
-                })
+            onFileChange(e) {
+                let files = e.target.files || e.dataTransfer.files;
+                if (!files.length)
+                    return;
+                this.createImage(files[0]);
             },
-        nuevoEmployee(){
-            if (!this.$v.$invalid) {
-                const params = {
-                nombre:this.nombre,
-                rut: this.rut,
-            };
-            axios.post('/employees',params).then((response) => {
-                const empleado = response.data;
-                this.nombre = "";
-                this.rut = "";
-                this.correo = "";
-                this.codigo = "";
-                if(empleado.save)
-                {
-                  this.showDialog = false;
-                  this.$notify(
-                    {
-                      message: 'Se creo correctamente el funcionario:<b> ' + empleado.nombre + '</b>',
-                      icon: 'done',
-                      horizontalAlign: 'right',
-                      verticalAlign: 'top',
-                      type: 'success'
-                    })
-                    this.$emit('new', empleado);
+            createImage(file) {
+                if(file.size < 512000){
+                  this.extension = file.name.split(".")[1];
+                  let reader = new FileReader();
+                  let vm = this;
+                  reader.onload = (e) => {
+                  vm.image = e.target.result;
+                };
+                  reader.readAsDataURL(file);
                 }else{
+                  this.image = null;
                   this.$notify(
                     {
-                      message: 'No se creo el funcionario. Revise los datos nuevamente',
+                      message: 'El tamaño del logo no debe ser mayor a 512 KB y debe ser en formato JPG',
                       icon: 'error',
                       horizontalAlign: 'right',
                       verticalAlign: 'top',
                       type: 'danger'
                     })
                 }
+
+            },
+        newDepartament(){
+            if (!this.$v.$invalid) {
+                const params = {
+                nombre:this.nombre,
+                image: this.image,
+                extension: this.extension,
+            };
+            axios.post('/departaments',params).then((response) => {
+                const empleado = response.data;
+                alert(empleado);
                 
             }).catch(errors => {
                     console.log(errors);
