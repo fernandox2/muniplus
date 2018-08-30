@@ -14275,10 +14275,6 @@ if (false) {(function () {
 //
 //
 //
-//
-//
-//
-
 
 
 /* harmony default export */ __webpack_exports__["a"] = ({
@@ -14292,61 +14288,60 @@ if (false) {(function () {
       HorarioJueves: [],
       HorarioViernes: [],
       HorarioSabado: [],
-      HorarioDomingo: [],
-      rut: '',
-      correo: '',
-      codigo: ''
+      HorarioDomingo: []
     };
   },
 
   validations: {
     nombre: {
       required: __WEBPACK_IMPORTED_MODULE_0_vuelidate_lib_validators__["required"],
-      minLength: Object(__WEBPACK_IMPORTED_MODULE_0_vuelidate_lib_validators__["minLength"])(10)
-    },
-    rut: {
-      required: __WEBPACK_IMPORTED_MODULE_0_vuelidate_lib_validators__["required"],
-      minLength: Object(__WEBPACK_IMPORTED_MODULE_0_vuelidate_lib_validators__["minLength"])(3)
-    },
-    codigo: {
-      required: __WEBPACK_IMPORTED_MODULE_0_vuelidate_lib_validators__["required"],
-      between: Object(__WEBPACK_IMPORTED_MODULE_0_vuelidate_lib_validators__["between"])(1, 9999999999)
-    },
-    correo: {
-      required: __WEBPACK_IMPORTED_MODULE_0_vuelidate_lib_validators__["required"],
-      email: __WEBPACK_IMPORTED_MODULE_0_vuelidate_lib_validators__["email"]
+      minLength: Object(__WEBPACK_IMPORTED_MODULE_0_vuelidate_lib_validators__["minLength"])(5)
     }
   },
   methods: {
+    isNumber: function isNumber(num) {
+      return !isNaN(parseFloat(num)) && isFinite(num);
+    },
+    validarHora: function validarHora(tiempo) {
+
+      var hora = tiempo.split(":");
+      var h = hora[0];
+      var m = hora[1];
+
+      if (this.isNumber(h) && this.isNumber(m) && h < 24 && m < 60) return tiempo;
+    },
     newSchedule: function newSchedule() {
       var _this = this;
 
       if (!this.$v.$invalid) {
         var params = {
           nombre: this.nombre,
-          rut: this.rut,
-          correo: this.correo,
-          codigo: this.codigo
+          HorarioLunes: this.HorarioLunes.sort(),
+          HorarioMartes: this.HorarioMartes.sort(),
+          HorarioMiercoles: this.HorarioMiercoles.sort(),
+          HorarioJueves: this.HorarioJueves.sort(),
+          HorarioViernes: this.HorarioViernes.sort(),
+          HorarioSabado: this.HorarioSabado.sort(),
+          HorarioDomingo: this.HorarioDomingo.sort()
         };
-        axios.post('/employees', params).then(function (response) {
-          var empleado = response.data;
-          _this.nombre = "";
-          _this.rut = "";
-          _this.correo = "";
-          _this.codigo = "";
-          if (empleado.save) {
+        axios.post('/schedules', params).then(function (response) {
+          var schedule = response.data;
+
+          alert(schedule.nombre);
+
+          if (schedule.save) {
             _this.showDialog = false;
             _this.$notify({
-              message: 'Se creo correctamente el funcionario:<b> ' + empleado.nombre + '</b>',
+              message: 'Se creo correctamente el horario:<b> ' + schedule.nombre + '</b>',
               icon: 'done',
               horizontalAlign: 'right',
               verticalAlign: 'top',
               type: 'success'
             });
-            _this.$emit('new', empleado);
+            _this.$emit('new', schedule);
           } else {
             _this.$notify({
-              message: 'No se creo el funcionario. Revise los datos nuevamente',
+              message: 'No se creo el horario. Revise los datos nuevamente',
               icon: 'error',
               horizontalAlign: 'right',
               verticalAlign: 'top',
@@ -46251,7 +46246,7 @@ exports = module.exports = __webpack_require__(1)(false);
 
 
 // module
-exports.push([module.i, "\n.md-layout[data-v-ae3f40ca] {\n  padding-left: 20px;\n  padding-right: 20px;\n}\n.md-dialog-actions[data-v-ae3f40ca] {\n  padding-right: 20px;\n}\n.error[data-v-ae3f40ca] {\n  color: red !important;\n}\n.newSchedule[data-v-ae3f40ca] {\n  height: 100% !important;\n}\n", ""]);
+exports.push([module.i, "\n.md-layout[data-v-ae3f40ca] {\n  padding-left: 20px;\n  padding-right: 20px;\n}\n.md-dialog-actions[data-v-ae3f40ca] {\n  padding-right: 20px;\n}\n.error[data-v-ae3f40ca] {\n  color: red !important;\n}\n.newSchedule[data-v-ae3f40ca] {\n  height: 100% !important;\n}\nform[data-v-ae3f40ca] {\n  overflow: auto !important;\n}\n", ""]);
 
 // exports
 
@@ -46282,7 +46277,10 @@ var render = function() {
           }
         },
         [
-          _c("md-dialog-title", [_vm._v("Datos del Horario")]),
+          _c("md-dialog-title", { staticClass: "text-center" }, [
+            _vm._v("Datos del Horario "),
+            _c("p", [_vm._v("Formato 24 Hrs.")])
+          ]),
           _vm._v(" "),
           _c(
             "form",
@@ -46307,12 +46305,6 @@ var render = function() {
                           expression: "nombre"
                         }
                       }),
-                      _vm._v(" "),
-                      !_vm.$v.nombre.required
-                        ? _c("div", { staticClass: "error" }, [
-                            _vm._v("Campo Obligatorio")
-                          ])
-                        : _vm._e(),
                       _vm._v(" "),
                       !_vm.$v.nombre.minLength
                         ? _c("div", { staticClass: "error" }, [
@@ -46339,9 +46331,9 @@ var render = function() {
                       _vm._v(" "),
                       _c("md-chips", {
                         attrs: {
-                          "md-input-type": "time",
-                          "md-placeholder": "Agrega horario",
-                          "md-limit": "4"
+                          "md-input-type": "text",
+                          "md-format": _vm.validarHora,
+                          "md-limit": 4
                         },
                         model: {
                           value: _vm.HorarioLunes,
@@ -46364,9 +46356,9 @@ var render = function() {
                       _vm._v(" "),
                       _c("md-chips", {
                         attrs: {
-                          "md-input-type": "time",
-                          "md-placeholder": "Agrega horario",
-                          "md-limit": "4"
+                          "md-input-type": "text",
+                          "md-format": _vm.validarHora,
+                          "md-limit": 4
                         },
                         model: {
                           value: _vm.HorarioMartes,
@@ -46391,9 +46383,9 @@ var render = function() {
                       _vm._v(" "),
                       _c("md-chips", {
                         attrs: {
-                          "md-input-type": "time",
-                          "md-placeholder": "Agrega horario",
-                          "md-limit": "4"
+                          "md-input-type": "text",
+                          "md-format": _vm.validarHora,
+                          "md-limit": 4
                         },
                         model: {
                           value: _vm.HorarioMiercoles,
@@ -46416,9 +46408,9 @@ var render = function() {
                       _vm._v(" "),
                       _c("md-chips", {
                         attrs: {
-                          "md-input-type": "time",
-                          "md-placeholder": "Agrega horario",
-                          "md-limit": "4"
+                          "md-input-type": "text",
+                          "md-format": _vm.validarHora,
+                          "md-limit": 4
                         },
                         model: {
                           value: _vm.HorarioJueves,
@@ -46443,9 +46435,9 @@ var render = function() {
                       _vm._v(" "),
                       _c("md-chips", {
                         attrs: {
-                          "md-input-type": "time",
-                          "md-placeholder": "Agrega horario",
-                          "md-limit": "4"
+                          "md-input-type": "text",
+                          "md-format": _vm.validarHora,
+                          "md-limit": 4
                         },
                         model: {
                           value: _vm.HorarioViernes,
@@ -46468,9 +46460,9 @@ var render = function() {
                       _vm._v(" "),
                       _c("md-chips", {
                         attrs: {
-                          "md-input-type": "time",
-                          "md-placeholder": "Agrega horario",
-                          "md-limit": "4"
+                          "md-input-type": "text",
+                          "md-format": _vm.validarHora,
+                          "md-limit": 4
                         },
                         model: {
                           value: _vm.HorarioSabado,
@@ -46497,9 +46489,9 @@ var render = function() {
                       _vm._v(" "),
                       _c("md-chips", {
                         attrs: {
-                          "md-input-type": "time",
-                          "md-placeholder": "Agrega horario",
-                          "md-limit": "4"
+                          "md-input-type": "text",
+                          "md-format": _vm.validarHora,
+                          "md-limit": 4
                         },
                         model: {
                           value: _vm.HorarioDomingo,

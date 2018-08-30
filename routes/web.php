@@ -23,4 +23,6 @@ Route::apiResource('/employees','EmployeeController');
 
 Route::apiResource('/departaments','DepartamentController');
 
+Route::apiResource('/schedules','ScheduleController');
+
 
