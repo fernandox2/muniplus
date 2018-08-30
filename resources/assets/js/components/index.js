@@ -2,7 +2,6 @@
 import ChartCard from './Cards/ChartCard.vue'
 import NavTabsCard from './Cards/NavTabsCard.vue'
 import StatsCard from './Cards/StatsCard.vue'
-import FileUpload from './FileUpload.vue'
 // Tables
 import NavTabsTable from './Tables/NavTabsTable.vue'
 import OrderedTable from './Tables/OrderedTable.vue'
@@ -16,9 +15,12 @@ import NewEmployee from './Employee/EmployeeNew.vue'
 import TableDepartament from './Departament/DepartamentTable.vue'
 import NewDepartament from './Departament/DepartamentNew.vue'
 
+//Shedule
+import TableSchedule from './Schedule/ScheduleTable.vue'
+import NewSchedule from './Schedule/ScheduleNew.vue'
+
 export {
   ChartCard,
-  FileUpload,
   NavTabsCard,
   StatsCard,
   NavTabsTable,
@@ -27,5 +29,7 @@ export {
   TableEmployee,
   NewEmployee,
   TableDepartament,
-  NewDepartament
+  NewDepartament,
+  TableSchedule,
+  NewSchedule
 }

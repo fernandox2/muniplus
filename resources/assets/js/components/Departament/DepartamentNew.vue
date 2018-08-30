@@ -17,7 +17,7 @@
           <div class="md-layout-item md-small-size-100 md-size-100">
             <md-field>
               <label>Only images</label>
-              <md-file v-model="image" accept="image/*" @change="onFileChange"/>
+              <md-file v-model="image" id="imagen" accept="image/*" @change="onFileChange"/>
             </md-field>
           </div>
           <md-button class="md-primary close" @click="showDialog = false">Close</md-button>
@@ -25,7 +25,7 @@
         </form>
     </md-dialog>
 
-<md-button class="md-primary" @click="showDialog = true"><md-icon>business</md-icon> Nuevo Departamento</md-button>
+<md-button class="md-primary" @click="showDialog = true">Nuevo Departamento</md-button>
   </div>
 </template>
 <style scoped>
@@ -47,8 +47,6 @@
 </style>
 <script>
 import { required, minLength } from 'vuelidate/lib/validators'
-import FileUpload from '../FileUpload.vue'
-
 export default{
     data(){
       return {
@@ -64,10 +62,7 @@ export default{
           minLength: minLength(5)
         },
     },
-      components: {
-    FileUpload
-  },
-      methods: {
+    methods: {
             onFileChange(e) {
                 let files = e.target.files || e.dataTransfer.files;
                 if (!files.length)
@@ -104,8 +99,31 @@ export default{
                 extension: this.extension,
             };
             axios.post('/departaments',params).then((response) => {
-                const empleado = response.data;
-                alert(empleado);
+                const res = response.data;
+                if(res.save){
+                  this.nombre = "";
+                  this.image = "";
+                  this.extension = "";
+                  this.showDialog = false;
+                  this.$notify(
+                    {
+                      message: 'Se creo correctamente el nuevo departamento <b>' + res.nombre + '</b>',
+                      icon: 'done',
+                      horizontalAlign: 'right',
+                      verticalAlign: 'top',
+                      type: 'success'
+                    })
+                  this.$emit('new', res);
+                }else{
+                  this.$notify(
+                    {
+                      message: 'Ocurrió un error al intentar almacenar el departamento. Corrobore los datos e intente nuevamente',
+                      icon: 'error',
+                      horizontalAlign: 'right',
+                      verticalAlign: 'top',
+                      type: 'danger'
+                    })
+                }
                 
             }).catch(errors => {
                     console.log(errors);

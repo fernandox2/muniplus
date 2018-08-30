@@ -85,8 +85,8 @@ import Datatable from '../Datatable.vue';
 import Pagination from '../Pagination.vue';
 
 import {
-  TableEmployee,
-  NewEmployee,
+  TableSchedule,
+  NewSchedule,
   OrderedTable
 } from '@/components'
 
@@ -156,10 +156,10 @@ export default{
     },
   components: {
     OrderedTable,
-    TableEmployee,
+    TableSchedule,
     datatable: Datatable, 
     pagination: Pagination,
-    nuevo: NewEmployee
+    nuevo: NewSchedule
   },
   methods: {
         addEmployee(empleado) {

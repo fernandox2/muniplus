@@ -1,17 +1,45 @@
 <template>
   <div class="content">
-    <div class="employee">
-      <NewDepartament @new="addEmployee"></NewDepartament>
+    <div class="departament">
+      <NewDepartament @new="addDepartament"></NewDepartament>
+              <div class="tableFilters">
+            <input class="input form-control pull-left" type="text" v-model="search" placeholder="Buscar ..."
+                   @input="resetPagination()">
 
-
-  </div>
+            <div class="control pull-right">
+                <div class="select">
+                    <select v-model="length" @change="resetPagination()" class="form-control">
+                        <option value="5">5</option>
+                        <option value="10">10</option>
+                        <option value="20">20</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <br>
+      <datatable :columns="columns" :sortKey="sortKey" :sortOrders="sortOrders" @sort="sortBy">
+          <TableDepartament
+            v-for="(departament, index) in paginated"
+            :key="departament.id"
+            :departament="departament"
+            :img="departament.logo"
+            @delete="deleteDepartament(departament)"
+            @actualizar="updateDepartament(departament)">
+          </TableDepartament>
+      </datatable>
+      <br>
+        <pagination :pagination="pagination" :client="true" :filtered="filteredProjects"
+                    @prev="--pagination.currentPage"
+                    @next="++pagination.currentPage">
+        </pagination>
+    </div>
   <md-dialog :md-active.sync="showDialog">
-      <md-dialog-title>Datos del Funcionario</md-dialog-title>
-
-      <form novalidate class="md-layout" v-on:submit.prevent="editEmployee()">
+      <md-dialog-title class="text-center">Datos del Departamento<br><img :src="image" class="img-responsive"></md-dialog-title>
+      
+     <form novalidate class="md-layout" enctype="multipart/form-data" v-on:submit.prevent="editDepartament()">
           <div class="md-layout-item md-small-size-100 md-size-100">
             <md-field>
-              <label>Nombre Completo</label>
+              <label>Nombre</label>
               <md-input v-model="nombre" type="text" required></md-input>
               <div class="error" v-if="!$v.nombre.required">Campo Obligatorio</div>
               <div class="error" v-if="!$v.nombre.minLength">El nombre debe tener a lo menos {{$v.nombre.$params.minLength.min}} letras.</div>
@@ -20,35 +48,13 @@
 
           <div class="md-layout-item md-small-size-100 md-size-100">
             <md-field>
-              <label>RUT</label>
-              <md-input v-model="rut" type="text" oninput="checkRut(this)"></md-input>
-              <div class="error" v-if="!$v.rut.required">Campo Obligatorio</div>
-              <div class="error" v-if="!$v.rut.minLength">El nombre debe tener a lo menos {{$v.rut.$params.minLength.min}} letras.</div>
+              <label>Only images</label>
+              <md-file v-model="image" id="imagen" accept="image/*" @change="onFileChange"/>
             </md-field>
           </div>
-
-          <div class="md-layout-item md-small-size-100 md-size-100">
-            <md-field>
-              <label>Correo Electrónico</label>
-              <md-input v-model="correo" type="email"></md-input>
-            <span class="error" v-if="!$v.correo.required">Campo requerido</span>
-            <span class="error" v-else-if="!$v.correo.email">Correo inválido</span>
-            </md-field>
-          </div>
-
-          <div class="md-layout-item md-small-size-100 md-size-100">
-            <md-field>
-              <label>Código</label>
-              <md-input v-model="codigo" type="email"></md-input>
-              <div class="error" v-if="!$v.codigo.required">Campo Obligatorio</div>
-              <div class="error" v-if="!$v.codigo.between">Sólo debe contener números</div>
-            </md-field>
-          </div>
-          <md-button type="submit" class="md-raised md-success right">Guardar</md-button>
+          <md-button class="md-primary close" @click="showDialog = false">Close</md-button>
+          <md-button type="submit" class="md-raised md-success">Guardar</md-button>
         </form>
-      <md-dialog-actions>
-        <md-button class="md-primary close" @click="showDialog = false">Close</md-button>
-      </md-dialog-actions>
     </md-dialog>
 </div>
 </template>
@@ -60,32 +66,29 @@ import Pagination from '../Pagination.vue';
 import {
   TableDepartament,
   NewDepartament,
-  FileUpload,
   OrderedTable
 } from '@/components'
 
 export default{
     name: 'DialogCustom',
     created(){
-      this.getEmployees();
+      this.getDepartaments();
     },
     data(){
         let sortOrders = {};
 
         let columns = [
-            {width: '15%', label: 'RUN', name: 'rut'},
-            {width: '30%', label: 'Nombre Completo', name: 'nombre'},
-            {width: '30%', label: 'Correo Electrónico', name: 'correo'},
-            {width: '15%', label: 'Código', name: 'codigo'},
-            {width: '10%', label: 'Acciones', name: 'acciones'}
+            {width: '30%', label: 'Insignia', name: 'logo', type: 'image'},
+            {width: '50%', label: 'Nombre del Departamento', name: 'nombre'},
+            {width: '20%', label: 'Acciones', name: 'acciones'}
         ];
 
         columns.forEach((column) => {
            sortOrders[column.name] = -1;
         });
         return {
-          employees:[],
-          employee:'',
+          departaments:[],
+          departament:'',
           columns: columns,
           sortKey: '',
           sortOrders: sortOrders,
@@ -94,11 +97,10 @@ export default{
           showDialog: false,
           id:0,
           nombre:'',
-          rut:'',
-          correo:'',
-          codigo:'',
+          image:null,
+          extension:'',
           tableData: {
-                client: true,
+            client: true,
           },
           pagination: {
                 currentPage: 1,
@@ -114,18 +116,6 @@ export default{
         nombre: {
           required,
           minLength: minLength(10)
-        },
-        rut: {
-          required,
-          minLength: minLength(3)
-        },
-        codigo: {
-          required,
-          between: between(1, 9999999999)
-        },
-        correo: {
-          required,
-          email
         }
     },
   components: {
@@ -133,72 +123,107 @@ export default{
     TableDepartament,
     datatable: Datatable, 
     pagination: Pagination,
-    NewDepartament,
-    FileUpload
+    NewDepartament
   },
   methods: {
-        addEmployee(empleado) {
-            this.employees.push(empleado);
+          onFileChange(e) {
+                let files = e.target.files || e.dataTransfer.files;
+                if (!files.length)
+                    return;
+                this.createImage(files[0]);
+            },
+          createImage(file) {
+                if(file.size < 512000){
+                  this.extension = file.name.split(".")[1];
+                  let reader = new FileReader();
+                  let vm = this;
+                  reader.onload = (e) => {
+                  vm.image = e.target.result;
+                };
+                  reader.readAsDataURL(file);
+                }else{
+                  this.image = null;
+                  this.$notify(
+                    {
+                      message: 'El tamaño del logo no debe ser mayor a 512 KB y debe ser en formato JPG',
+                      icon: 'error',
+                      horizontalAlign: 'right',
+                      verticalAlign: 'top',
+                      type: 'danger'
+                    })
+                }
+
         },
-        deleteEmployee(empleado){
-            var index = this.employees.indexOf(empleado);
-            this.employees.splice(index, 1);
+        addDepartament(departament) {
+            this.departaments.push(departament);
         },
-        actualizarEmployee(empleado){
-          this.employee = empleado;
-          this.nombre = empleado.nombre;
-          this.rut = empleado.rut;
-          this.correo = empleado.correo;
-          this.codigo = empleado.codigo;
-          this.id = empleado.id;
+        deleteDepartament(departamento){
+            var index = this.departaments.indexOf(departamento);
+            this.departaments.splice(index, 1);
+        },
+        updateDepartament(departament){
+          this.departament = departament;
+          this.nombre = departament.nombre;
+          this.image = departament.logo;
+          this.id = departament.id;
           this.showDialog = true;
         },
-        editEmployee(){
-          const params = {
-          id: this.id,
-          nombre: this.nombre,
-          rut: this.rut,
-          correo: this.correo,
-          codigo: this.codigo,
-        };
-          var index = this.employees.indexOf(this.employee);
-          axios.put(`/employees/${this.id}`, params).then((response) => {
-              this.employee = response.data;
-              this.employees[index] = this.employee;
-              this.getEmployees();
-              this.id = 0;
-              this.nombre = "";
-              this.rut = "";
-              this.correo = "";
-              this.codigo = "";
-              this.showDialog = false;
-              if(this.employee.save){
-                this.$notify(
-                  {
-                    message: 'Se actualizó correctamente el funcionario:<b> ' + this.employee.nombre + '</b>',
-                    icon: 'done',
-                    horizontalAlign: 'right',
-                    verticalAlign: 'top',
-                    type: 'success'
-                  })
-              }else{
-                this.$notify(
-                  {
-                    message: 'El registro no pudo ser actualizado. Por favor revise si los datos ingresados son correctos.',
-                    icon: 'error',
-                    horizontalAlign: 'right',
-                    verticalAlign: 'top',
-                    type: 'danger'
-                  })
-              }
+        editDepartament(){
+            if (!this.$v.$invalid) {
+                const params = {
+                nombre:this.nombre,
+                image: this.image,
+                extension: this.extension,
+            };
+            var index = this.departaments.indexOf(this.departament);
+            axios.put(`/departaments/${this.id}`, params).then((response) => {
+              this.departament = response.data;
+              this.departaments[index] = this.departament;
+              this.getDepartaments();
+                if(this.departament.save){
+                  this.nombre = "";
+                  this.image = "";
+                  this.extension = "";
+                  this.showDialog = false;
+                  this.$notify(
+                    {
+                      message: 'Se actualizó correctamente el departamento <b>' + this.departament.nombre + '</b>',
+                      icon: 'done',
+                      horizontalAlign: 'right',
+                      verticalAlign: 'top',
+                      type: 'success'
+                    })
+                }else{
+                  this.$notify(
+                    {
+                      message: 'Ocurrió un error al intentar actualizar el departamento. Corrobore los datos e intente nuevamente',
+                      icon: 'error',
+                      horizontalAlign: 'right',
+                      verticalAlign: 'top',
+                      type: 'danger'
+                    })
+                }
+                
+            }).catch(errors => {
+                    console.log(errors);
+                });
+            }else{
+                  this.$notify(
+                    {
+                      message: 'Error en la validación del formulario. Revise los datos e intente nuevamente',
+                      icon: 'error',
+                      horizontalAlign: 'right',
+                      verticalAlign: 'top',
+                      type: 'danger'
+                    })
+            }
 
-          });
-        },
-        getEmployees(url = '/employees') {
+            },
+        getDepartaments(url = '/departaments') {
                 axios.get(url, {params: this.tableData})
                     .then(response => {
-                        this.employees = response.data;
-                        this.pagination.total = this.employees.length;
+                        this.departaments = response.data;
+                        this.pagination.total = this.departaments.length;
                     })
                     .catch(errors => {
                         console.log(errors);
@@ -224,55 +249,12 @@ export default{
         getIndex(array, key, value) {
                 return array.findIndex(i => i[key] == value);
             },
-        nuevoEmployee(){
-            if (!this.$v.$invalid) {
-                const params = {
-                nombre:this.nombre,
-                rut: this.rut,
-                correo: this.correo,
-                codigo: this.codigo,
-            };
-            axios.post('/employees',params).then((response) => {
-                const empleado = response.data;
-                this.nombre = "";
-                this.rut = "";
-                this.correo = "";
-                this.codigo = "";
-                if(empleado.save)
-                {
-                  this.showDialog = false;
-                  this.$notify(
-                    {
-                      message: 'Se creo correctamente el funcionario:<b> ' + empleado.nombre + '</b>',
-                      icon: 'done',
-                      horizontalAlign: 'right',
-                      verticalAlign: 'top',
-                      type: 'success'
-                    })
-                    this.$emit('new', empleado);
-                }else{
-                  this.$notify(
-                    {
-                      message: 'No se creo el funcionario. Revise los datos nuevamente',
-                      icon: 'error',
-                      horizontalAlign: 'right',
-                      verticalAlign: 'top',
-                      type: 'danger'
-                    })
-                }
-                
-            }).catch(errors => {
-                    console.log(errors);
-                });
-            }
-
-            }
         },
     computed: {
         filteredProjects() {
-            let employees = this.employees;
+            let departaments = this.departaments;
             if (this.search) {
-                employees = employees.filter((row) => {
+                departaments = departaments.filter((row) => {
                     return Object.keys(row).some((key) => {
                         return String(row[key]).toLowerCase().indexOf(this.search.toLowerCase()) > -1;
                     })
@@ -281,8 +263,8 @@ export default{
             let sortKey = this.sortKey;
             let order = this.sortOrders[sortKey] || 1;
             if (sortKey) {
-                employees = employees.slice().sort((a, b) => {
-                    let index = this.getIndex(this.columns, 'name', sortKey);
+                departaments = departaments.slice().sort((a, b) => {
+                    let index = this.getIndex(this.columns, 'nombre', sortKey);
                     a = String(a[sortKey]).toLowerCase();
                     b = String(b[sortKey]).toLowerCase();
                     if (this.columns[index].type && this.columns[index].type === 'date') {
@@ -294,7 +276,7 @@ export default{
                     }
                 });
             }
-            return employees;
+            return departaments;
         },
         paginated() {
             return this.paginate(this.filteredProjects, this.length, this.pagination.currentPage);
@@ -304,12 +286,17 @@ export default{
 </script>
 
 <style lang="scss" scoped>
-  .employee {
+  .departament {
     padding-left: 20px;
     padding-right: 20px; 
   }
   .md-dialog{
         padding:20px;
+  }
+
+  .img-responsive{
+        max-height: 150px;
+        margin:0px auto;
   }
 
 </style>

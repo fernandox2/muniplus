@@ -16,6 +16,10 @@
         <md-icon>person</md-icon>
         <p>Funcionarios</p>
       </sidebar-link>
+      <sidebar-link to="/schedule">
+        <md-icon>schedule</md-icon>
+        <p>Horarios</p>
+      </sidebar-link>
       <sidebar-link to="/user">
         <md-icon>person</md-icon>
         <p>User Profile</p>

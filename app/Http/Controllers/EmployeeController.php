@@ -42,7 +42,7 @@ class EmployeeController extends Controller
 
     public function show($id)
     {
-        return view('employees/index');
+        //return view('employees/index');
     }
 
     public function update(Request $request, $id)
