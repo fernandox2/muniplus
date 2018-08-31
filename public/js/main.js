@@ -14348,7 +14348,7 @@ if (false) {(function () {
               verticalAlign: 'top',
               type: 'success'
             });
-            //this.$emit('new', schedule);
+            _this.$emit('new', schedule);
           } else {
             _this.$notify({
               message: 'No se creo el horario. Revise los datos nuevamente',
@@ -15656,6 +15656,32 @@ if (false) {(function () {
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -15666,19 +15692,19 @@ if (false) {(function () {
 /* harmony default export */ __webpack_exports__["a"] = ({
     name: 'DialogCustom',
     created: function created() {
-        this.getEmployees();
+        this.getSchedules();
     },
     data: function data() {
         var sortOrders = {};
 
-        var columns = [{ width: '15%', label: 'RUN', name: 'rut' }, { width: '30%', label: 'Nombre Completo', name: 'nombre' }, { width: '30%', label: 'Correo Electrónico', name: 'correo' }, { width: '15%', label: 'Código', name: 'codigo' }, { width: '10%', label: 'Acciones', name: 'acciones' }];
+        var columns = [{ width: '80%', label: 'Nombre del Horario', name: 'nombre' }, { width: '20%', label: 'Acciones', name: 'acciones' }];
 
         columns.forEach(function (column) {
             sortOrders[column.name] = -1;
         });
         return {
-            employees: [],
-            employee: '',
+            schedules: [],
+            schedule: '',
             columns: columns,
             sortKey: '',
             sortOrders: sortOrders,
@@ -15687,9 +15713,15 @@ if (false) {(function () {
             showDialog: false,
             id: 0,
             nombre: '',
-            rut: '',
-            correo: '',
-            codigo: '',
+            HorarioLunes: [],
+            HorarioMartes: [],
+            HorarioMiercoles: [],
+            HorarioJueves: [],
+            HorarioViernes: [],
+            HorarioSabado: [],
+            HorarioDomingo: [],
+            todos: [],
+            horarios: null,
             tableData: {
                 client: true
             },
@@ -15708,18 +15740,6 @@ if (false) {(function () {
         nombre: {
             required: __WEBPACK_IMPORTED_MODULE_0_vuelidate_lib_validators__["required"],
             minLength: Object(__WEBPACK_IMPORTED_MODULE_0_vuelidate_lib_validators__["minLength"])(10)
-        },
-        rut: {
-            required: __WEBPACK_IMPORTED_MODULE_0_vuelidate_lib_validators__["required"],
-            minLength: Object(__WEBPACK_IMPORTED_MODULE_0_vuelidate_lib_validators__["minLength"])(3)
-        },
-        codigo: {
-            required: __WEBPACK_IMPORTED_MODULE_0_vuelidate_lib_validators__["required"],
-            between: Object(__WEBPACK_IMPORTED_MODULE_0_vuelidate_lib_validators__["between"])(1, 9999999999)
-        },
-        correo: {
-            required: __WEBPACK_IMPORTED_MODULE_0_vuelidate_lib_validators__["required"],
-            email: __WEBPACK_IMPORTED_MODULE_0_vuelidate_lib_validators__["email"]
         }
     },
     components: {
@@ -15730,53 +15750,79 @@ if (false) {(function () {
         nuevo: __WEBPACK_IMPORTED_MODULE_3__components__["f" /* NewSchedule */]
     },
     methods: {
-        addEmployee: function addEmployee(empleado) {
-            this.employees.push(empleado);
+        isNumber: function isNumber(num) {
+            return !isNaN(parseFloat(num)) && isFinite(num);
         },
-        deleteEmployee: function deleteEmployee(empleado) {
-            var index = this.employees.indexOf(empleado);
-            this.employees.splice(index, 1);
+        validarHora: function validarHora(tiempo) {
+
+            var hora = tiempo.split(":");
+            var h = hora[0];
+            var m = hora[1];
+
+            if (this.isNumber(h) && this.isNumber(m) && h < 24 && m < 60) return tiempo;
         },
-        actualizarEmployee: function actualizarEmployee(empleado) {
-            this.employee = empleado;
-            this.nombre = empleado.nombre;
-            this.rut = empleado.rut;
-            this.correo = empleado.correo;
-            this.codigo = empleado.codigo;
-            this.id = empleado.id;
-            this.showDialog = true;
+        addSchedule: function addSchedule(schedule) {
+            this.schedules.push(schedule);
         },
-        editEmployee: function editEmployee() {
+        deleteSchedule: function deleteSchedule(schedule) {
+            var index = this.schedules.indexOf(schedule);
+            this.schedules.splice(index, 1);
+        },
+        getSchedules: function getSchedules() {
             var _this = this;
 
+            var url = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '/schedules';
+
+            axios.get(url, { params: this.tableData }).then(function (response) {
+                _this.schedules = response.data;
+                _this.pagination.total = _this.schedules.length;
+            }).catch(function (errors) {
+                console.log(errors);
+            });
+        },
+        editSchedule: function editSchedule() {
+            var _this2 = this;
+
+            // Añadir Todos Los Horarios A Un Array
+            this.todos = [this.HorarioLunes.sort(), this.HorarioMartes.sort(), this.HorarioMiercoles.sort(), this.HorarioJueves.sort(), this.HorarioViernes.sort(), this.HorarioSabado.sort(), this.HorarioDomingo.sort()];
             var params = {
                 id: this.id,
                 nombre: this.nombre,
-                rut: this.rut,
-                correo: this.correo,
-                codigo: this.codigo
+                HorarioLunes: this.HorarioLunes.sort(),
+                HorarioMartes: this.HorarioMartes.sort(),
+                HorarioMiercoles: this.HorarioMiercoles.sort(),
+                HorarioJueves: this.HorarioJueves.sort(),
+                HorarioViernes: this.HorarioViernes.sort(),
+                HorarioSabado: this.HorarioSabado.sort(),
+                HorarioDomingo: this.HorarioDomingo.sort(),
+                todos: this.todos
             };
-            var index = this.employees.indexOf(this.employee);
-            axios.put('/employees/' + this.id, params).then(function (response) {
-                _this.employee = response.data;
-                _this.employees[index] = _this.employee;
-                _this.getEmployees();
-                _this.id = 0;
-                _this.nombre = "";
-                _this.rut = "";
-                _this.correo = "";
-                _this.codigo = "";
-                _this.showDialog = false;
-                if (_this.employee.save) {
-                    _this.$notify({
-                        message: 'Se actualizó correctamente el funcionario:<b> ' + _this.employee.nombre + '</b>',
+            var index = this.schedules.indexOf(this.schedule);
+            axios.put('/schedules/' + this.id, params).then(function (response) {
+                _this2.schedule = response.data;
+                _this2.schedules[index] = _this2.schedule;
+                _this2.getSchedules();
+                _this2.id = 0;
+                _this2.nombre = "";
+                _this2.HorarioLunes = [];
+                _this2.HorarioMartes = [];
+                _this2.HorarioMiercoles = [];
+                _this2.HorarioJueves = [];
+                _this2.HorarioViernes = [];
+                _this2.HorarioSabado = [];
+                _this2.HorarioDomingo = [];
+                _this2.todos = [];
+                _this2.showDialog = false;
+                if (_this2.schedule.save) {
+                    _this2.$notify({
+                        message: 'Se actualizó correctamente el horario:<b> ' + _this2.schedule.nombre + '</b>',
                         icon: 'done',
                         horizontalAlign: 'right',
                         verticalAlign: 'top',
                         type: 'success'
                     });
                 } else {
-                    _this.$notify({
+                    _this2.$notify({
                         message: 'El registro no pudo ser actualizado. Por favor revise si los datos ingresados son correctos.',
                         icon: 'error',
                         horizontalAlign: 'right',
@@ -15786,17 +15832,79 @@ if (false) {(function () {
                 }
             });
         },
-        getEmployees: function getEmployees() {
-            var _this2 = this;
+        getPrograms: function getPrograms(id) {
+            var _this3 = this;
 
-            var url = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '/employees';
+            axios.get('/schedules/programs/' + id).then(function (response) {
+                _this3.horario = response.data;
+                var i;
+                var entrada1;
+                var salida1;
+                var entrada2;
+                var salida2;
+                for (i = 0; i < _this3.horario.length; i++) {
+                    // Quitar ultimos digitos despues del :
+                    if (_this3.horario[i].entrada1 != null && _this3.horario[i].salida1 != null) {
+                        entrada1 = _this3.horario[i].entrada1.split(":")[0] + ":" + _this3.horario[i].entrada1.split(":")[1];
+                        salida1 = _this3.horario[i].salida1.split(":")[0] + ":" + _this3.horario[i].salida1.split(":")[1];
+                    }
 
-            axios.get(url, { params: this.tableData }).then(function (response) {
-                _this2.employees = response.data;
-                _this2.pagination.total = _this2.employees.length;
+                    if (_this3.horario[i].entrada2 != null && _this3.horario[i].salida2 != null) {
+                        entrada2 = _this3.horario[i].entrada2.split(":")[0] + ":" + _this3.horario[i].entrada2.split(":")[1];
+                        salida2 = _this3.horario[i].salida2.split(":")[0] + ":" + _this3.horario[i].salida2.split(":")[1];
+                    }
+
+                    switch (_this3.horario[i].dia_id) {
+                        case 1:
+                            _this3.HorarioLunes = [entrada1, salida1, entrada2, salida2];
+                            _this3.HorarioLunes = _this3.HorarioLunes.filter(Boolean);
+                            break;
+                        case 2:
+                            _this3.HorarioMartes = [entrada1, salida1, entrada2, salida2];
+                            _this3.HorarioMartes = _this3.HorarioMartes.filter(Boolean);
+                            break;
+                        case 3:
+                            _this3.HorarioMiercoles = [entrada1, salida1, entrada2, salida2];
+                            _this3.HorarioMiercoles = _this3.HorarioMiercoles.filter(Boolean);
+                            break;
+                        case 4:
+                            _this3.HorarioJueves = [entrada1, salida1, entrada2, salida2];
+                            _this3.HorarioJueves = _this3.HorarioJueves.filter(Boolean);
+                            break;
+                        case 5:
+                            _this3.HorarioViernes = [entrada1, salida1, entrada2, salida2];
+                            _this3.HorarioViernes = _this3.HorarioViernes.filter(Boolean);
+                            break;
+                        case 6:
+                            _this3.HorarioSabado = [entrada1, salida1, entrada2, salida2];
+                            _this3.HorarioSabado = _this3.HorarioSabado.filter(Boolean);
+                            break;
+                        case 7:
+                            _this3.HorarioDomingo = [entrada1, salida1, entrada2, salida2];
+                            _this3.HorarioDomingo = _this3.HorarioDomingo.filter(Boolean);
+                            break;
+                        default:
+                            break;
+                    }
+                }
             }).catch(function (errors) {
                 console.log(errors);
             });
+        },
+        actualizarSchedule: function actualizarSchedule(schedule) {
+            this.schedule = schedule;
+            this.nombre = schedule.nombre;
+            this.id = schedule.id;
+            this.HorarioLunes = [];
+            this.HorarioMartes = [];
+            this.HorarioMiercoles = [];
+            this.HorarioJueves = [];
+            this.HorarioViernes = [];
+            this.HorarioSabado = [];
+            this.HorarioDomingo = [];
+            this.todos = [];
+            this.getPrograms(this.id);
+            this.showDialog = true;
         },
         paginate: function paginate(array, length, pageNumber) {
             this.pagination.from = array.length ? (pageNumber - 1) * length + 1 : ' ';
@@ -15823,33 +15931,33 @@ if (false) {(function () {
     },
     computed: {
         filteredProjects: function filteredProjects() {
-            var _this3 = this;
+            var _this4 = this;
 
-            var employees = this.employees;
+            var schedules = this.schedules;
             if (this.search) {
-                employees = employees.filter(function (row) {
+                schedules = schedules.filter(function (row) {
                     return Object.keys(row).some(function (key) {
-                        return String(row[key]).toLowerCase().indexOf(_this3.search.toLowerCase()) > -1;
+                        return String(row[key]).toLowerCase().indexOf(_this4.search.toLowerCase()) > -1;
                     });
                 });
             }
             var sortKey = this.sortKey;
             var order = this.sortOrders[sortKey] || 1;
             if (sortKey) {
-                employees = employees.slice().sort(function (a, b) {
-                    var index = _this3.getIndex(_this3.columns, 'name', sortKey);
+                schedules = schedules.slice().sort(function (a, b) {
+                    var index = _this4.getIndex(_this4.columns, 'name', sortKey);
                     a = String(a[sortKey]).toLowerCase();
                     b = String(b[sortKey]).toLowerCase();
-                    if (_this3.columns[index].type && _this3.columns[index].type === 'date') {
+                    if (_this4.columns[index].type && _this4.columns[index].type === 'date') {
                         return (a === b ? 0 : new Date(a).getTime() > new Date(b).getTime() ? 1 : -1) * order;
-                    } else if (_this3.columns[index].type && _this3.columns[index].type === 'number') {
+                    } else if (_this4.columns[index].type && _this4.columns[index].type === 'number') {
                         return (+a === +b ? 0 : +a > +b ? 1 : -1) * order;
                     } else {
                         return (a === b ? 0 : a > b ? 1 : -1) * order;
                     }
                 });
             }
-            return employees;
+            return schedules;
         },
         paginated: function paginated() {
             return this.paginate(this.filteredProjects, this.length, this.pagination.currentPage);
@@ -46134,30 +46242,55 @@ if (false) {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__node_modules_vue_loader_lib_runtime_component_normalizer__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__babel_loader_cacheDirectory_true_presets_env_modules_false_targets_browsers_2_uglify_true_plugins_transform_object_rest_spread_transform_runtime_polyfill_false_helpers_false_node_modules_vue_loader_lib_selector_type_script_index_0_ScheduleTable_vue__ = __webpack_require__(244);
+/* unused harmony namespace reexport */
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__node_modules_vue_loader_lib_template_compiler_index_id_data_v_439243ee_hasScoped_true_optionsId_0_buble_transforms_node_modules_vue_loader_lib_selector_type_template_index_0_ScheduleTable_vue__ = __webpack_require__(247);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__node_modules_vue_loader_lib_runtime_component_normalizer__ = __webpack_require__(0);
+var disposed = false
+function injectStyle (context) {
+  if (disposed) return
+  __webpack_require__(245)
+}
 /* script */
-var __vue_script__ = null
+
+
 /* template */
-var __vue_render__, __vue_static_render_fns__
+
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
-var __vue_styles__ = null
+var __vue_styles__ = injectStyle
 /* scopeId */
-var __vue_scopeId__ = null
+var __vue_scopeId__ = "data-v-439243ee"
 /* moduleIdentifier (server only) */
 var __vue_module_identifier__ = null
 
-var Component = Object(__WEBPACK_IMPORTED_MODULE_0__node_modules_vue_loader_lib_runtime_component_normalizer__["a" /* default */])(
-  __vue_script__,
-  __vue_render__,
-  __vue_static_render_fns__,
+var Component = Object(__WEBPACK_IMPORTED_MODULE_2__node_modules_vue_loader_lib_runtime_component_normalizer__["a" /* default */])(
+  __WEBPACK_IMPORTED_MODULE_0__babel_loader_cacheDirectory_true_presets_env_modules_false_targets_browsers_2_uglify_true_plugins_transform_object_rest_spread_transform_runtime_polyfill_false_helpers_false_node_modules_vue_loader_lib_selector_type_script_index_0_ScheduleTable_vue__["a" /* default */],
+  __WEBPACK_IMPORTED_MODULE_1__node_modules_vue_loader_lib_template_compiler_index_id_data_v_439243ee_hasScoped_true_optionsId_0_buble_transforms_node_modules_vue_loader_lib_selector_type_template_index_0_ScheduleTable_vue__["a" /* render */],
+  __WEBPACK_IMPORTED_MODULE_1__node_modules_vue_loader_lib_template_compiler_index_id_data_v_439243ee_hasScoped_true_optionsId_0_buble_transforms_node_modules_vue_loader_lib_selector_type_template_index_0_ScheduleTable_vue__["b" /* staticRenderFns */],
   __vue_template_functional__,
   __vue_styles__,
   __vue_scopeId__,
   __vue_module_identifier__
 )
 Component.options.__file = "resources\\assets\\js\\components\\Schedule\\ScheduleTable.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-439243ee", Component.options)
+  } else {
+    hotAPI.reload("data-v-439243ee", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
 
 /* harmony default export */ __webpack_exports__["a"] = (Component.exports);
 
@@ -50132,7 +50265,7 @@ exports = module.exports = __webpack_require__(1)(false);
 
 
 // module
-exports.push([module.i, "\n.employee[data-v-924f9ae4] {\n  padding-left: 20px;\n  padding-right: 20px;\n}\n.md-dialog[data-v-924f9ae4] {\n  padding: 20px;\n}\n", ""]);
+exports.push([module.i, "\n.schedule[data-v-924f9ae4] {\n  padding-left: 20px;\n  padding-right: 20px;\n}\n.md-dialog[data-v-924f9ae4] {\n  padding: 20px;\n}\n", ""]);
 
 // exports
 
@@ -50148,360 +50281,435 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c(
-    "div",
-    { staticClass: "content" },
-    [
-      _c(
-        "div",
-        { staticClass: "employee" },
-        [
-          _c("nuevo", { on: { new: _vm.addEmployee } }),
-          _vm._v(" "),
-          _c("div", { staticClass: "tableFilters" }, [
-            _c("input", {
-              directives: [
-                {
-                  name: "model",
-                  rawName: "v-model",
-                  value: _vm.search,
-                  expression: "search"
-                }
-              ],
-              staticClass: "input form-control pull-left",
-              attrs: { type: "text", placeholder: "Buscar ..." },
-              domProps: { value: _vm.search },
-              on: {
-                input: [
-                  function($event) {
-                    if ($event.target.composing) {
-                      return
-                    }
-                    _vm.search = $event.target.value
-                  },
-                  function($event) {
-                    _vm.resetPagination()
-                  }
-                ]
+  return _c("div", { staticClass: "content" }, [
+    _c(
+      "div",
+      { staticClass: "schedule" },
+      [
+        _c("nuevo", { on: { new: _vm.addSchedule } }),
+        _vm._v(" "),
+        _c("div", { staticClass: "tableFilters" }, [
+          _c("input", {
+            directives: [
+              {
+                name: "model",
+                rawName: "v-model",
+                value: _vm.search,
+                expression: "search"
               }
-            }),
-            _vm._v(" "),
-            _c("div", { staticClass: "control pull-right" }, [
-              _c("div", { staticClass: "select" }, [
-                _c(
-                  "select",
-                  {
-                    directives: [
-                      {
-                        name: "model",
-                        rawName: "v-model",
-                        value: _vm.length,
-                        expression: "length"
-                      }
-                    ],
-                    staticClass: "form-control",
-                    on: {
-                      change: [
-                        function($event) {
-                          var $$selectedVal = Array.prototype.filter
-                            .call($event.target.options, function(o) {
-                              return o.selected
-                            })
-                            .map(function(o) {
-                              var val = "_value" in o ? o._value : o.value
-                              return val
-                            })
-                          _vm.length = $event.target.multiple
-                            ? $$selectedVal
-                            : $$selectedVal[0]
-                        },
-                        function($event) {
-                          _vm.resetPagination()
-                        }
-                      ]
-                    }
-                  },
-                  [
-                    _c("option", { attrs: { value: "5" } }, [_vm._v("5")]),
-                    _vm._v(" "),
-                    _c("option", { attrs: { value: "10" } }, [_vm._v("10")]),
-                    _vm._v(" "),
-                    _c("option", { attrs: { value: "20" } }, [_vm._v("20")])
-                  ]
-                )
-              ])
-            ])
-          ]),
-          _vm._v(" "),
-          _c("br"),
-          _vm._v(" "),
-          _c(
-            "datatable",
-            {
-              attrs: {
-                columns: _vm.columns,
-                sortKey: _vm.sortKey,
-                sortOrders: _vm.sortOrders
-              },
-              on: { sort: _vm.sortBy }
-            },
-            _vm._l(_vm.paginated, function(employee, index) {
-              return _c("TableEmployee", {
-                key: employee.id,
-                attrs: { employee: employee },
-                on: {
-                  delete: function($event) {
-                    _vm.deleteEmployee(employee)
-                  },
-                  actualizar: function($event) {
-                    _vm.actualizarEmployee(employee)
-                  }
-                }
-              })
-            })
-          ),
-          _vm._v(" "),
-          _c("br"),
-          _vm._v(" "),
-          _c("pagination", {
-            attrs: {
-              pagination: _vm.pagination,
-              client: true,
-              filtered: _vm.filteredProjects
-            },
+            ],
+            staticClass: "input form-control pull-left",
+            attrs: { type: "text", placeholder: "Buscar ..." },
+            domProps: { value: _vm.search },
             on: {
-              prev: function($event) {
-                --_vm.pagination.currentPage
-              },
-              next: function($event) {
-                ++_vm.pagination.currentPage
-              }
+              input: [
+                function($event) {
+                  if ($event.target.composing) {
+                    return
+                  }
+                  _vm.search = $event.target.value
+                },
+                function($event) {
+                  _vm.resetPagination()
+                }
+              ]
             }
+          }),
+          _vm._v(" "),
+          _c("div", { staticClass: "control pull-right" }, [
+            _c("div", { staticClass: "select" }, [
+              _c(
+                "select",
+                {
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model",
+                      value: _vm.length,
+                      expression: "length"
+                    }
+                  ],
+                  staticClass: "form-control",
+                  on: {
+                    change: [
+                      function($event) {
+                        var $$selectedVal = Array.prototype.filter
+                          .call($event.target.options, function(o) {
+                            return o.selected
+                          })
+                          .map(function(o) {
+                            var val = "_value" in o ? o._value : o.value
+                            return val
+                          })
+                        _vm.length = $event.target.multiple
+                          ? $$selectedVal
+                          : $$selectedVal[0]
+                      },
+                      function($event) {
+                        _vm.resetPagination()
+                      }
+                    ]
+                  }
+                },
+                [
+                  _c("option", { attrs: { value: "5" } }, [_vm._v("5")]),
+                  _vm._v(" "),
+                  _c("option", { attrs: { value: "10" } }, [_vm._v("10")]),
+                  _vm._v(" "),
+                  _c("option", { attrs: { value: "20" } }, [_vm._v("20")])
+                ]
+              )
+            ])
+          ])
+        ]),
+        _vm._v(" "),
+        _c("br"),
+        _vm._v(" "),
+        _c(
+          "datatable",
+          {
+            attrs: {
+              columns: _vm.columns,
+              sortKey: _vm.sortKey,
+              sortOrders: _vm.sortOrders
+            },
+            on: { sort: _vm.sortBy }
+          },
+          _vm._l(_vm.paginated, function(schedule, index) {
+            return _c("TableSchedule", {
+              key: schedule.id,
+              attrs: { schedule: schedule },
+              on: {
+                delete: function($event) {
+                  _vm.deleteSchedule(schedule)
+                },
+                actualizar: function($event) {
+                  _vm.actualizarSchedule(schedule)
+                }
+              }
+            })
           })
-        ],
-        1
-      ),
-      _vm._v(" "),
-      _c(
-        "md-dialog",
-        {
-          attrs: { "md-active": _vm.showDialog },
+        ),
+        _vm._v(" "),
+        _c("br"),
+        _vm._v(" "),
+        _c("pagination", {
+          attrs: {
+            pagination: _vm.pagination,
+            client: true,
+            filtered: _vm.filteredProjects
+          },
           on: {
-            "update:mdActive": function($event) {
-              _vm.showDialog = $event
+            prev: function($event) {
+              --_vm.pagination.currentPage
+            },
+            next: function($event) {
+              ++_vm.pagination.currentPage
             }
           }
-        },
-        [
-          _c("md-dialog-title", [_vm._v("Datos del Funcionario")]),
-          _vm._v(" "),
-          _c(
-            "form",
-            {
-              staticClass: "md-layout",
-              attrs: { novalidate: "" },
-              on: {
-                submit: function($event) {
-                  $event.preventDefault()
-                  _vm.editEmployee()
-                }
+        }),
+        _vm._v(" "),
+        _c(
+          "md-dialog",
+          {
+            attrs: { "md-active": _vm.showDialog },
+            on: {
+              "update:mdActive": function($event) {
+                _vm.showDialog = $event
               }
-            },
-            [
-              _c(
-                "div",
-                { staticClass: "md-layout-item md-small-size-100 md-size-100" },
-                [
-                  _c(
-                    "md-field",
-                    [
-                      _c("label", [_vm._v("Nombre Completo")]),
-                      _vm._v(" "),
-                      _c("md-input", {
-                        attrs: { type: "text", required: "" },
-                        model: {
-                          value: _vm.nombre,
-                          callback: function($$v) {
-                            _vm.nombre = $$v
-                          },
-                          expression: "nombre"
-                        }
-                      }),
-                      _vm._v(" "),
-                      !_vm.$v.nombre.required
-                        ? _c("div", { staticClass: "error" }, [
-                            _vm._v("Campo Obligatorio")
-                          ])
-                        : _vm._e(),
-                      _vm._v(" "),
-                      !_vm.$v.nombre.minLength
-                        ? _c("div", { staticClass: "error" }, [
-                            _vm._v(
-                              "El nombre debe tener a lo menos " +
-                                _vm._s(_vm.$v.nombre.$params.minLength.min) +
-                                " letras."
-                            )
-                          ])
-                        : _vm._e()
-                    ],
-                    1
-                  )
-                ],
-                1
-              ),
-              _vm._v(" "),
-              _c(
-                "div",
-                { staticClass: "md-layout-item md-small-size-100 md-size-100" },
-                [
-                  _c(
-                    "md-field",
-                    [
-                      _c("label", [_vm._v("RUT")]),
-                      _vm._v(" "),
-                      _c("md-input", {
-                        attrs: { type: "text", oninput: "checkRut(this)" },
-                        model: {
-                          value: _vm.rut,
-                          callback: function($$v) {
-                            _vm.rut = $$v
-                          },
-                          expression: "rut"
-                        }
-                      }),
-                      _vm._v(" "),
-                      !_vm.$v.rut.required
-                        ? _c("div", { staticClass: "error" }, [
-                            _vm._v("Campo Obligatorio")
-                          ])
-                        : _vm._e(),
-                      _vm._v(" "),
-                      !_vm.$v.rut.minLength
-                        ? _c("div", { staticClass: "error" }, [
-                            _vm._v(
-                              "El nombre debe tener a lo menos " +
-                                _vm._s(_vm.$v.rut.$params.minLength.min) +
-                                " letras."
-                            )
-                          ])
-                        : _vm._e()
-                    ],
-                    1
-                  )
-                ],
-                1
-              ),
-              _vm._v(" "),
-              _c(
-                "div",
-                { staticClass: "md-layout-item md-small-size-100 md-size-100" },
-                [
-                  _c(
-                    "md-field",
-                    [
-                      _c("label", [_vm._v("Correo Electrónico")]),
-                      _vm._v(" "),
-                      _c("md-input", {
-                        attrs: { type: "email" },
-                        model: {
-                          value: _vm.correo,
-                          callback: function($$v) {
-                            _vm.correo = $$v
-                          },
-                          expression: "correo"
-                        }
-                      }),
-                      _vm._v(" "),
-                      !_vm.$v.correo.required
-                        ? _c("span", { staticClass: "error" }, [
-                            _vm._v("Campo requerido")
-                          ])
-                        : !_vm.$v.correo.email
-                          ? _c("span", { staticClass: "error" }, [
-                              _vm._v("Correo inválido")
+            }
+          },
+          [
+            _c("md-dialog-title", { staticClass: "text-center" }, [
+              _vm._v("Datos del Horario "),
+              _c("p", [_vm._v("Formato 24 Hrs.")])
+            ]),
+            _vm._v(" "),
+            _c(
+              "form",
+              { staticClass: "md-layout", attrs: { novalidate: "" } },
+              [
+                _c(
+                  "div",
+                  {
+                    staticClass: "md-layout-item md-small-size-100 md-size-100"
+                  },
+                  [
+                    _c(
+                      "md-field",
+                      [
+                        _c("label", [_vm._v("Nombre del Horario")]),
+                        _vm._v(" "),
+                        _c("md-input", {
+                          attrs: { type: "text", required: "" },
+                          model: {
+                            value: _vm.nombre,
+                            callback: function($$v) {
+                              _vm.nombre = $$v
+                            },
+                            expression: "nombre"
+                          }
+                        }),
+                        _vm._v(" "),
+                        !_vm.$v.nombre.minLength
+                          ? _c("div", { staticClass: "error" }, [
+                              _vm._v(
+                                "El nombre debe tener a lo menos " +
+                                  _vm._s(_vm.$v.nombre.$params.minLength.min) +
+                                  " letras."
+                              )
                             ])
                           : _vm._e()
-                    ],
-                    1
-                  )
-                ],
-                1
-              ),
-              _vm._v(" "),
-              _c(
-                "div",
-                { staticClass: "md-layout-item md-small-size-100 md-size-100" },
-                [
+                      ],
+                      1
+                    )
+                  ],
+                  1
+                ),
+                _vm._v(" "),
+                _c("div", { staticClass: "md-layout md-gutter" }, [
                   _c(
-                    "md-field",
+                    "div",
+                    { staticClass: "md-layout-item md-small-size-100" },
                     [
-                      _c("label", [_vm._v("Código")]),
-                      _vm._v(" "),
-                      _c("md-input", {
-                        attrs: { type: "email" },
-                        model: {
-                          value: _vm.codigo,
-                          callback: function($$v) {
-                            _vm.codigo = $$v
-                          },
-                          expression: "codigo"
-                        }
-                      }),
-                      _vm._v(" "),
-                      !_vm.$v.codigo.required
-                        ? _c("div", { staticClass: "error" }, [
-                            _vm._v("Campo Obligatorio")
-                          ])
-                        : _vm._e(),
-                      _vm._v(" "),
-                      !_vm.$v.codigo.between
-                        ? _c("div", { staticClass: "error" }, [
-                            _vm._v("Sólo debe contener números")
-                          ])
-                        : _vm._e()
-                    ],
-                    1
+                      _c(
+                        "div",
+                        [
+                          _c("label", [_vm._v("Lunes")]),
+                          _vm._v(" "),
+                          _c("md-chips", {
+                            attrs: {
+                              "md-input-type": "text",
+                              "md-format": _vm.validarHora,
+                              "md-limit": 4
+                            },
+                            model: {
+                              value: _vm.HorarioLunes,
+                              callback: function($$v) {
+                                _vm.HorarioLunes = $$v
+                              },
+                              expression: "HorarioLunes"
+                            }
+                          })
+                        ],
+                        1
+                      )
+                    ]
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "div",
+                    { staticClass: "md-layout-item md-small-size-100" },
+                    [
+                      _c(
+                        "div",
+                        [
+                          _c("label", [_vm._v("Martes")]),
+                          _vm._v(" "),
+                          _c("md-chips", {
+                            attrs: {
+                              "md-input-type": "text",
+                              "md-format": _vm.validarHora,
+                              "md-limit": 4
+                            },
+                            model: {
+                              value: _vm.HorarioMartes,
+                              callback: function($$v) {
+                                _vm.HorarioMartes = $$v
+                              },
+                              expression: "HorarioMartes"
+                            }
+                          })
+                        ],
+                        1
+                      )
+                    ]
                   )
-                ],
-                1
-              ),
-              _vm._v(" "),
-              _c(
-                "md-button",
-                {
-                  staticClass: "md-raised md-success right",
-                  attrs: { type: "submit" }
-                },
-                [_vm._v("Guardar")]
-              )
-            ],
-            1
-          ),
-          _vm._v(" "),
-          _c(
-            "md-dialog-actions",
-            [
-              _c(
-                "md-button",
-                {
-                  staticClass: "md-primary close",
-                  on: {
-                    click: function($event) {
-                      _vm.showDialog = false
+                ]),
+                _vm._v(" "),
+                _c("div", { staticClass: "md-layout md-gutter" }, [
+                  _c(
+                    "div",
+                    { staticClass: "md-layout-item md-small-size-100" },
+                    [
+                      _c(
+                        "div",
+                        [
+                          _c("label", [_vm._v("Miércoles")]),
+                          _vm._v(" "),
+                          _c("md-chips", {
+                            attrs: {
+                              "md-input-type": "text",
+                              "md-format": _vm.validarHora,
+                              "md-limit": 4
+                            },
+                            model: {
+                              value: _vm.HorarioMiercoles,
+                              callback: function($$v) {
+                                _vm.HorarioMiercoles = $$v
+                              },
+                              expression: "HorarioMiercoles"
+                            }
+                          })
+                        ],
+                        1
+                      )
+                    ]
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "div",
+                    { staticClass: "md-layout-item md-small-size-100" },
+                    [
+                      _c(
+                        "div",
+                        [
+                          _c("label", [_vm._v("Jueves")]),
+                          _vm._v(" "),
+                          _c("md-chips", {
+                            attrs: {
+                              "md-input-type": "text",
+                              "md-format": _vm.validarHora,
+                              "md-limit": 4
+                            },
+                            model: {
+                              value: _vm.HorarioJueves,
+                              callback: function($$v) {
+                                _vm.HorarioJueves = $$v
+                              },
+                              expression: "HorarioJueves"
+                            }
+                          })
+                        ],
+                        1
+                      )
+                    ]
+                  )
+                ]),
+                _vm._v(" "),
+                _c("div", { staticClass: "md-layout md-gutter" }, [
+                  _c(
+                    "div",
+                    { staticClass: "md-layout-item md-small-size-100" },
+                    [
+                      _c(
+                        "div",
+                        [
+                          _c("label", [_vm._v("Viernes")]),
+                          _vm._v(" "),
+                          _c("md-chips", {
+                            attrs: {
+                              "md-input-type": "text",
+                              "md-format": _vm.validarHora,
+                              "md-limit": 4
+                            },
+                            model: {
+                              value: _vm.HorarioViernes,
+                              callback: function($$v) {
+                                _vm.HorarioViernes = $$v
+                              },
+                              expression: "HorarioViernes"
+                            }
+                          })
+                        ],
+                        1
+                      )
+                    ]
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "div",
+                    { staticClass: "md-layout-item md-small-size-100" },
+                    [
+                      _c(
+                        "div",
+                        [
+                          _c("label", [_vm._v("Sábado")]),
+                          _vm._v(" "),
+                          _c("md-chips", {
+                            attrs: {
+                              "md-input-type": "text",
+                              "md-format": _vm.validarHora,
+                              "md-limit": 4
+                            },
+                            model: {
+                              value: _vm.HorarioSabado,
+                              callback: function($$v) {
+                                _vm.HorarioSabado = $$v
+                              },
+                              expression: "HorarioSabado"
+                            }
+                          })
+                        ],
+                        1
+                      )
+                    ]
+                  )
+                ]),
+                _vm._v(" "),
+                _c(
+                  "div",
+                  {
+                    staticClass: "md-layout-item md-small-size-100 md-size-100"
+                  },
+                  [
+                    _c(
+                      "div",
+                      [
+                        _c("label", [_vm._v("Domingo")]),
+                        _vm._v(" "),
+                        _c("md-chips", {
+                          attrs: {
+                            "md-input-type": "text",
+                            "md-format": _vm.validarHora,
+                            "md-limit": 4
+                          },
+                          model: {
+                            value: _vm.HorarioDomingo,
+                            callback: function($$v) {
+                              _vm.HorarioDomingo = $$v
+                            },
+                            expression: "HorarioDomingo"
+                          }
+                        })
+                      ],
+                      1
+                    )
+                  ]
+                ),
+                _vm._v(" "),
+                _c(
+                  "md-button",
+                  {
+                    staticClass: "md-primary close",
+                    on: {
+                      click: function($event) {
+                        _vm.showDialog = false
+                      }
                     }
-                  }
-                },
-                [_vm._v("Close")]
-              )
-            ],
-            1
-          )
-        ],
-        1
-      )
-    ],
-    1
-  )
+                  },
+                  [_vm._v("Close")]
+                ),
+                _vm._v(" "),
+                _c(
+                  "md-button",
+                  {
+                    staticClass: "md-raised md-success",
+                    attrs: { type: "button" },
+                    on: { click: _vm.editSchedule }
+                  },
+                  [_vm._v("Guardar")]
+                )
+              ],
+              1
+            )
+          ],
+          1
+        )
+      ],
+      1
+    )
+  ])
 }
 var staticRenderFns = []
 render._withStripped = true
@@ -87846,6 +88054,159 @@ return Chartist;
 
 }));
 
+
+/***/ }),
+/* 244 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["a"] = ({
+    props: ['schedule'],
+    data: function data() {
+        return {};
+    },
+
+    methods: {
+        onClickDelete: function onClickDelete() {
+            var _this = this;
+
+            var mensaje = confirm("¿Confirma que desea eliminar el horario?");
+            if (mensaje) {
+                axios.delete('/schedules/' + this.schedule.id).then(function () {
+                    _this.$notify({
+                        message: 'Registro eliminado correctamente',
+                        icon: 'done',
+                        horizontalAlign: 'right',
+                        verticalAlign: 'top',
+                        type: 'success'
+                    });
+                    //this.$emit('delete');
+                });
+            } else {}
+        },
+        onClickEdit: function onClickEdit() {
+            this.$emit('actualizar');
+        }
+    }
+});
+
+/***/ }),
+/* 245 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(246);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var add = __webpack_require__(3).default
+var update = add("185c6f66", content, false, {});
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../../node_modules/css-loader/index.js!../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"optionsId\":\"0\",\"vue\":true,\"id\":\"data-v-439243ee\",\"scoped\":true,\"sourceMap\":false}!../../../../../node_modules/sass-loader/lib/loader.js!../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./ScheduleTable.vue", function() {
+     var newContent = require("!!../../../../../node_modules/css-loader/index.js!../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"optionsId\":\"0\",\"vue\":true,\"id\":\"data-v-439243ee\",\"scoped\":true,\"sourceMap\":false}!../../../../../node_modules/sass-loader/lib/loader.js!../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./ScheduleTable.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 246 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(1)(false);
+// imports
+
+
+// module
+exports.push([module.i, "\n.md-icon[data-v-439243ee] {\n  margin-right: 20px;\n}\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 247 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return render; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return staticRenderFns; });
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "md-table-row",
+    { staticClass: "text-center" },
+    [
+      _c("md-table-cell", [_vm._v(_vm._s(_vm.schedule.nombre))]),
+      _vm._v(" "),
+      _c(
+        "md-table-cell",
+        [
+          _c(
+            "md-button",
+            {
+              staticClass: "md-fab md-info",
+              on: {
+                click: function($event) {
+                  $event.preventDefault()
+                  _vm.onClickEdit()
+                }
+              }
+            },
+            [_c("md-icon", [_vm._v("edit")])],
+            1
+          ),
+          _vm._v(" "),
+          _c(
+            "md-button",
+            {
+              staticClass: "md-fab md-danger",
+              on: {
+                click: function($event) {
+                  $event.preventDefault()
+                  _vm.onClickDelete()
+                }
+              }
+            },
+            [_c("md-icon", [_vm._v("delete")])],
+            1
+          )
+        ],
+        1
+      )
+    ],
+    1
+  )
+}
+var staticRenderFns = []
+render._withStripped = true
+
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-439243ee", { render: render, staticRenderFns: staticRenderFns })
+  }
+}
 
 /***/ })
 /******/ ]);

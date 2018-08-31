@@ -155,7 +155,7 @@ export default{
                       verticalAlign: 'top',
                       type: 'success'
                     })
-                    //this.$emit('new', schedule);
+                    this.$emit('new', schedule);
                 }else{
                   this.$notify(
                     {

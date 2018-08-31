@@ -25,4 +25,4 @@ Route::apiResource('/departaments','DepartamentController');
 
 Route::apiResource('/schedules','ScheduleController');
 
-
+Route::get('/schedules/programs/{id}', 'ScheduleController@findPrograms');

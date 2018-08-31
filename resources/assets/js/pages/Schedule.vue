@@ -1,7 +1,7 @@
 <template>
   <div class="content">
-    <div class="employee">
-      <nuevo @new="addEmployee"></nuevo>
+    <div class="schedule">
+      <nuevo @new="addSchedule"></nuevo>
         <div class="tableFilters">
             <input class="input form-control pull-left" type="text" v-model="search" placeholder="Buscar ..."
                    @input="resetPagination()">
@@ -18,66 +18,92 @@
         </div>
         <br>
       <datatable :columns="columns" :sortKey="sortKey" :sortOrders="sortOrders" @sort="sortBy">
-          <TableEmployee
-            v-for="(employee, index) in paginated"
-            :key="employee.id"
-            :employee="employee"
-            @delete="deleteEmployee(employee)"
-            @actualizar="actualizarEmployee(employee)">
-          </TableEmployee>
+          <TableSchedule
+            v-for="(schedule, index) in paginated"
+            :key="schedule.id"
+            :schedule="schedule"
+            @delete="deleteSchedule(schedule)"
+            @actualizar="actualizarSchedule(schedule)">
+          </TableSchedule>
       </datatable>
       <br>
         <pagination :pagination="pagination" :client="true" :filtered="filteredProjects"
                     @prev="--pagination.currentPage"
                     @next="++pagination.currentPage">
         </pagination>
-  </div>
-  <md-dialog :md-active.sync="showDialog">
-      <md-dialog-title>Datos del Funcionario</md-dialog-title>
 
-      <form novalidate class="md-layout" v-on:submit.prevent="editEmployee()">
+        <md-dialog :md-active.sync="showDialog">
+      <md-dialog-title class="text-center">Datos del Horario <p>Formato 24 Hrs.</p></md-dialog-title>
+      <form novalidate class="md-layout">
           <div class="md-layout-item md-small-size-100 md-size-100">
             <md-field>
-              <label>Nombre Completo</label>
+              <label>Nombre del Horario</label>
               <md-input v-model="nombre" type="text" required></md-input>
-              <div class="error" v-if="!$v.nombre.required">Campo Obligatorio</div>
               <div class="error" v-if="!$v.nombre.minLength">El nombre debe tener a lo menos {{$v.nombre.$params.minLength.min}} letras.</div>
             </md-field>
           </div>
 
-          <div class="md-layout-item md-small-size-100 md-size-100">
-            <md-field>
-              <label>RUT</label>
-              <md-input v-model="rut" type="text" oninput="checkRut(this)"></md-input>
-              <div class="error" v-if="!$v.rut.required">Campo Obligatorio</div>
-              <div class="error" v-if="!$v.rut.minLength">El nombre debe tener a lo menos {{$v.rut.$params.minLength.min}} letras.</div>
-            </md-field>
+          <div class="md-layout md-gutter">
+            <div class="md-layout-item md-small-size-100">
+            <div>
+              <label>Lunes</label>
+              <md-chips  md-input-type="text" v-model="HorarioLunes" :md-format="validarHora" :md-limit="4"></md-chips>
+            </div>
+            </div>
+
+            <div class="md-layout-item md-small-size-100">
+            <div>
+              <label>Martes</label>
+              <md-chips  md-input-type="text" v-model="HorarioMartes" :md-format="validarHora" :md-limit="4"></md-chips>
+            </div>
+            </div>
+          </div>
+          <div class="md-layout md-gutter">
+            <div class="md-layout-item md-small-size-100">
+            <div>
+              <label>Miércoles</label>
+              <md-chips  md-input-type="text" v-model="HorarioMiercoles" :md-format="validarHora" :md-limit="4"></md-chips>
+            </div>
+            </div>
+
+            <div class="md-layout-item md-small-size-100">
+            <div>
+              <label>Jueves</label>
+              <md-chips  md-input-type="text" v-model="HorarioJueves" :md-format="validarHora" :md-limit="4"></md-chips>
+            </div>
+            </div>
+          </div>
+
+          <div class="md-layout md-gutter">
+            <div class="md-layout-item md-small-size-100">
+            <div>
+              <label>Viernes</label>
+              <md-chips  md-input-type="text" v-model="HorarioViernes" :md-format="validarHora" :md-limit="4"></md-chips>
+            </div>
+            </div>
+
+            <div class="md-layout-item md-small-size-100">
+            <div>
+              <label>Sábado</label>
+              <md-chips md-input-type="text" v-model="HorarioSabado" :md-format="validarHora" :md-limit="4"></md-chips>
+            </div>
+            </div>
           </div>
 
           <div class="md-layout-item md-small-size-100 md-size-100">
-            <md-field>
-              <label>Correo Electrónico</label>
-              <md-input v-model="correo" type="email"></md-input>
-            <span class="error" v-if="!$v.correo.required">Campo requerido</span>
-            <span class="error" v-else-if="!$v.correo.email">Correo inválido</span>
-            </md-field>
+            <div>
+              <label>Domingo</label>
+              <md-chips md-input-type="text" v-model="HorarioDomingo" :md-format="validarHora" :md-limit="4"></md-chips>
+            </div>
           </div>
 
-          <div class="md-layout-item md-small-size-100 md-size-100">
-            <md-field>
-              <label>Código</label>
-              <md-input v-model="codigo" type="email"></md-input>
-              <div class="error" v-if="!$v.codigo.required">Campo Obligatorio</div>
-              <div class="error" v-if="!$v.codigo.between">Sólo debe contener números</div>
-            </md-field>
-          </div>
-          <md-button type="submit" class="md-raised md-success right">Guardar</md-button>
+          <md-button class="md-primary close" @click="showDialog = false">Close</md-button>
+          <md-button type="button" @click="editSchedule" class="md-raised md-success">Guardar</md-button>
         </form>
-      <md-dialog-actions>
-        <md-button class="md-primary close" @click="showDialog = false">Close</md-button>
-      </md-dialog-actions>
+
     </md-dialog>
-</div>
+  </div>
+ </div>
 </template>
 <script>
 import { required, minLength, between, email } from 'vuelidate/lib/validators';
@@ -93,25 +119,22 @@ import {
 export default{
     name: 'DialogCustom',
     created(){
-      this.getEmployees();
+      this.getSchedules();
     },
     data(){
         let sortOrders = {};
 
         let columns = [
-            {width: '15%', label: 'RUN', name: 'rut'},
-            {width: '30%', label: 'Nombre Completo', name: 'nombre'},
-            {width: '30%', label: 'Correo Electrónico', name: 'correo'},
-            {width: '15%', label: 'Código', name: 'codigo'},
-            {width: '10%', label: 'Acciones', name: 'acciones'}
+            {width: '80%', label: 'Nombre del Horario', name: 'nombre'},
+            {width: '20%', label: 'Acciones', name: 'acciones'}
         ];
 
         columns.forEach((column) => {
            sortOrders[column.name] = -1;
         });
         return {
-          employees:[],
-          employee:'',
+          schedules:[],
+          schedule:'',
           columns: columns,
           sortKey: '',
           sortOrders: sortOrders,
@@ -120,9 +143,15 @@ export default{
           showDialog: false,
           id:0,
           nombre:'',
-          rut:'',
-          correo:'',
-          codigo:'',
+          HorarioLunes:[],
+          HorarioMartes:[],
+          HorarioMiercoles:[],
+          HorarioJueves:[],
+          HorarioViernes:[],
+          HorarioSabado:[],
+          HorarioDomingo:[],
+          todos:[],
+          horarios:null,
           tableData: {
                 client: true,
           },
@@ -140,18 +169,6 @@ export default{
         nombre: {
           required,
           minLength: minLength(10)
-        },
-        rut: {
-          required,
-          minLength: minLength(3)
-        },
-        codigo: {
-          required,
-          between: between(1, 9999999999)
-        },
-        correo: {
-          required,
-          email
         }
     },
   components: {
@@ -162,45 +179,78 @@ export default{
     nuevo: NewSchedule
   },
   methods: {
-        addEmployee(empleado) {
-            this.employees.push(empleado);
+        isNumber(num){
+          return !isNaN(parseFloat(num)) && isFinite(num);
         },
-        deleteEmployee(empleado){
-            var index = this.employees.indexOf(empleado);
-            this.employees.splice(index, 1);
+        validarHora(tiempo){
+
+          var hora = tiempo.split(":");
+          var h = hora[0];
+          var m = hora[1];
+
+          if(this.isNumber(h) && this.isNumber(m) && h < 24 && m < 60)            
+            return tiempo;
         },
-        actualizarEmployee(empleado){
-          this.employee = empleado;
-          this.nombre = empleado.nombre;
-          this.rut = empleado.rut;
-          this.correo = empleado.correo;
-          this.codigo = empleado.codigo;
-          this.id = empleado.id;
-          this.showDialog = true;
+        addSchedule(schedule) {
+            this.schedules.push(schedule);
         },
-        editEmployee(){
-          const params = {
-          id: this.id,
-          nombre: this.nombre,
-          rut: this.rut,
-          correo: this.correo,
-          codigo: this.codigo,
-        };
-          var index = this.employees.indexOf(this.employee);
-          axios.put(`/employees/${this.id}`, params).then((response) => {
-              this.employee = response.data;
-              this.employees[index] = this.employee;
-              this.getEmployees();
+        deleteSchedule(schedule){
+            var index = this.schedules.indexOf(schedule);
+            this.schedules.splice(index, 1);
+        },
+        getSchedules(url = '/schedules') {
+                axios.get(url, {params: this.tableData})
+                    .then(response => {
+                        this.schedules = response.data;
+                        this.pagination.total = this.schedules.length;
+                    })
+                    .catch(errors => {
+                        console.log(errors);
+                    });
+            },
+        editSchedule(){
+              // Añadir Todos Los Horarios A Un Array
+            this.todos=[
+                this.HorarioLunes.sort(),
+                this.HorarioMartes.sort(),
+                this.HorarioMiercoles.sort(),
+                this.HorarioJueves.sort(),
+                this.HorarioViernes.sort(),
+                this.HorarioSabado.sort(),
+                this.HorarioDomingo.sort()
+              ];
+                const params = {
+                id: this.id,
+                nombre:this.nombre,
+                HorarioLunes: this.HorarioLunes.sort(),
+                HorarioMartes: this.HorarioMartes.sort(),
+                HorarioMiercoles: this.HorarioMiercoles.sort(),
+                HorarioJueves: this.HorarioJueves.sort(),
+                HorarioViernes: this.HorarioViernes.sort(),
+                HorarioSabado: this.HorarioSabado.sort(),
+                HorarioDomingo: this.HorarioDomingo.sort(),
+                todos: this.todos
+            };
+          var index = this.schedules.indexOf(this.schedule);
+          axios.put(`/schedules/${this.id}`, params).then((response) => {
+              this.schedule = response.data;
+              this.schedules[index] = this.schedule;
+              this.getSchedules();
               this.id = 0;
               this.nombre = "";
-              this.rut = "";
-              this.correo = "";
-              this.codigo = "";
+              this.HorarioLunes = []; 
+              this.HorarioMartes = [];
+              this.HorarioMiercoles = [];
+              this.HorarioJueves = [];
+              this.HorarioViernes = [];
+              this.HorarioSabado = [];
+              this.HorarioDomingo = [];
+              this.todos = [];
               this.showDialog = false;
-              if(this.employee.save){
+              if(this.schedule.save){
                 this.$notify(
                   {
-                    message: 'Se actualizó correctamente el funcionario:<b> ' + this.employee.nombre + '</b>',
+                    message: 'Se actualizó correctamente el horario:<b> ' + this.schedule.nombre + '</b>',
                     icon: 'done',
                     horizontalAlign: 'right',
                     verticalAlign: 'top',
@@ -219,16 +269,112 @@ export default{
 
           });
         },
-        getEmployees(url = '/employees') {
-                axios.get(url, {params: this.tableData})
-                    .then(response => {
-                        this.employees = response.data;
-                        this.pagination.total = this.employees.length;
-                    })
-                    .catch(errors => {
-                        console.log(errors);
-                    });
+        getPrograms(id) {
+            axios.get(`/schedules/programs/${id}`).then(response => { 
+            this.horario = response.data;
+            var i;
+            var entrada1;
+            var salida1;
+            var entrada2;
+            var salida2;
+            for (i = 0; i < this.horario.length; i++) { 
+                  // Quitar ultimos digitos despues del :
+                  if(this.horario[i].entrada1 != null && this.horario[i].salida1 != null){
+                    entrada1 = this.horario[i].entrada1.split(":")[0] + ":" + this.horario[i].entrada1.split(":")[1];
+                    salida1 = this.horario[i].salida1.split(":")[0] + ":" + this.horario[i].salida1.split(":")[1];
+                  }
+
+                  if(this.horario[i].entrada2 != null && this.horario[i].salida2 != null){
+                    entrada2 = this.horario[i].entrada2.split(":")[0] + ":" + this.horario[i].entrada2.split(":")[1];
+                    salida2 = this.horario[i].salida2.split(":")[0] + ":" + this.horario[i].salida2.split(":")[1];
+                  }
+
+                  switch(this.horario[i].dia_id) {
+                          case 1:
+                          this.HorarioLunes = [
+                            entrada1,
+                            salida1,
+                            entrada2,
+                            salida2,
+                          ];
+                          this.HorarioLunes = this.HorarioLunes.filter(Boolean);
+                              break;
+                          case 2:
+                          this.HorarioMartes = [
+                            entrada1,
+                            salida1,
+                            entrada2,
+                            salida2,
+                          ];
+                          this.HorarioMartes = this.HorarioMartes.filter(Boolean);
+                              break;
+                          case 3:
+                          this.HorarioMiercoles = [
+                             entrada1,
+                            salida1,
+                            entrada2,
+                            salida2,
+                          ];
+                          this.HorarioMiercoles = this.HorarioMiercoles.filter(Boolean);
+                              break;
+                          case 4:
+                          this.HorarioJueves = [
+                            entrada1,
+                            salida1,
+                            entrada2,
+                            salida2,
+                          ];
+                          this.HorarioJueves = this.HorarioJueves.filter(Boolean);
+                              break;
+                          case 5:
+                          this.HorarioViernes = [
+                            entrada1,
+                            salida1,
+                            entrada2,
+                            salida2,
+                          ];
+                          this.HorarioViernes = this.HorarioViernes.filter(Boolean);
+                              break;
+                          case 6:
+                          this.HorarioSabado = [
+                            entrada1,
+                            salida1,
+                            entrada2,
+                            salida2,
+                          ];
+                          this.HorarioSabado = this.HorarioSabado.filter(Boolean);
+                              break;
+                          case 7:
+                          this.HorarioDomingo = [
+                            entrada1,
+                            salida1,
+                            entrada2,
+                            salida2,
+                          ];
+                          this.HorarioDomingo = this.HorarioDomingo.filter(Boolean);
+                              break;
+                          default:
+                              break;
+                      }
+            }
+
+          }).catch(errors => { console.log(errors); });
             },
+        actualizarSchedule(schedule){
+          this.schedule = schedule;
+          this.nombre = schedule.nombre;
+          this.id = schedule.id;
+          this.HorarioLunes = []; 
+          this.HorarioMartes = [];
+          this.HorarioMiercoles = [];
+          this.HorarioJueves = [];
+          this.HorarioViernes = [];
+          this.HorarioSabado = [];
+          this.HorarioDomingo = [];
+          this.todos = [];
+          this.getPrograms(this.id);
+          this.showDialog = true;
+        },
         paginate(array, length, pageNumber) {
                 this.pagination.from = array.length ? ((pageNumber - 1) * length) + 1 : ' ';
                 this.pagination.to = pageNumber * length > array.length ? array.length : pageNumber * length;
@@ -253,9 +399,9 @@ export default{
         },
     computed: {
         filteredProjects() {
-            let employees = this.employees;
+            let schedules = this.schedules;
             if (this.search) {
-                employees = employees.filter((row) => {
+                schedules = schedules.filter((row) => {
                     return Object.keys(row).some((key) => {
                         return String(row[key]).toLowerCase().indexOf(this.search.toLowerCase()) > -1;
                     })
@@ -264,7 +410,7 @@ export default{
             let sortKey = this.sortKey;
             let order = this.sortOrders[sortKey] || 1;
             if (sortKey) {
-                employees = employees.slice().sort((a, b) => {
+                schedules = schedules.slice().sort((a, b) => {
                     let index = this.getIndex(this.columns, 'name', sortKey);
                     a = String(a[sortKey]).toLowerCase();
                     b = String(b[sortKey]).toLowerCase();
@@ -277,7 +423,7 @@ export default{
                     }
                 });
             }
-            return employees;
+            return schedules;
         },
         paginated() {
             return this.paginate(this.filteredProjects, this.length, this.pagination.currentPage);
@@ -287,7 +433,7 @@ export default{
 </script>
 
 <style lang="scss" scoped>
-  .employee {
+  .schedule {
     padding-left: 20px;
     padding-right: 20px; 
   }
