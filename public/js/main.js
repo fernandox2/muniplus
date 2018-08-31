@@ -14288,7 +14288,8 @@ if (false) {(function () {
       HorarioJueves: [],
       HorarioViernes: [],
       HorarioSabado: [],
-      HorarioDomingo: []
+      HorarioDomingo: [],
+      todos: []
     };
   },
 
@@ -14314,6 +14315,8 @@ if (false) {(function () {
       var _this = this;
 
       if (!this.$v.$invalid) {
+        // Añadir Todos Los Horarios A Un Array
+        this.todos = [this.HorarioLunes.sort(), this.HorarioMartes.sort(), this.HorarioMiercoles.sort(), this.HorarioJueves.sort(), this.HorarioViernes.sort(), this.HorarioSabado.sort(), this.HorarioDomingo.sort()];
         var params = {
           nombre: this.nombre,
           HorarioLunes: this.HorarioLunes.sort(),
@@ -14322,23 +14325,30 @@ if (false) {(function () {
           HorarioJueves: this.HorarioJueves.sort(),
           HorarioViernes: this.HorarioViernes.sort(),
           HorarioSabado: this.HorarioSabado.sort(),
-          HorarioDomingo: this.HorarioDomingo.sort()
+          HorarioDomingo: this.HorarioDomingo.sort(),
+          todos: this.todos
         };
         axios.post('/schedules', params).then(function (response) {
           var schedule = response.data;
-
-          alert(schedule.nombre);
-
           if (schedule.save) {
+            _this.nombre = "";
+            _this.HorarioLunes = [];
+            _this.HorarioMartes = [];
+            _this.HorarioMiercoles = [];
+            _this.HorarioJueves = [];
+            _this.HorarioViernes = [];
+            _this.HorarioSabado = [];
+            _this.HorarioDomingo = [];
+            _this.todos = [];
             _this.showDialog = false;
             _this.$notify({
-              message: 'Se creo correctamente el horario:<b> ' + schedule.nombre + '</b>',
+              message: 'Se creo correctamente el horario <b>' + schedule.nombre,
               icon: 'done',
               horizontalAlign: 'right',
               verticalAlign: 'top',
               type: 'success'
             });
-            _this.$emit('new', schedule);
+            //this.$emit('new', schedule);
           } else {
             _this.$notify({
               message: 'No se creo el horario. Revise los datos nuevamente',

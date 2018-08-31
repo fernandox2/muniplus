@@ -87,7 +87,8 @@ export default{
           HorarioJueves:[],
           HorarioViernes:[],
           HorarioSabado:[],
-          HorarioDomingo:[]
+          HorarioDomingo:[],
+          todos:[]
         }
     },
       validations: {
@@ -111,6 +112,16 @@ export default{
         },
         newSchedule(){
             if (!this.$v.$invalid) {
+              // Añadir Todos Los Horarios A Un Array
+              this.todos=[
+                this.HorarioLunes.sort(),
+                this.HorarioMartes.sort(),
+                this.HorarioMiercoles.sort(),
+                this.HorarioJueves.sort(),
+                this.HorarioViernes.sort(),
+                this.HorarioSabado.sort(),
+                this.HorarioDomingo.sort()
+              ];
                 const params = {
                 nombre:this.nombre,
                 HorarioLunes: this.HorarioLunes.sort(),
@@ -120,24 +131,31 @@ export default{
                 HorarioViernes: this.HorarioViernes.sort(),
                 HorarioSabado: this.HorarioSabado.sort(),
                 HorarioDomingo: this.HorarioDomingo.sort(),
+                todos: this.todos
             };
             axios.post('/schedules',params).then((response) => {
                 const schedule = response.data;
-
-                alert(schedule.nombre);
-
                 if(schedule.save)
                 {
+                    this.nombre = "";
+                    this.HorarioLunes = []; 
+                    this.HorarioMartes = [];
+                    this.HorarioMiercoles = [];
+                    this.HorarioJueves = [];
+                    this.HorarioViernes = [];
+                    this.HorarioSabado = [];
+                    this.HorarioDomingo = [];
+                    this.todos = [];
                   this.showDialog = false;
                   this.$notify(
                     {
-                      message: 'Se creo correctamente el horario:<b> ' + schedule.nombre + '</b>',
+                      message: 'Se creo correctamente el horario <b>' + schedule.nombre,
                       icon: 'done',
                       horizontalAlign: 'right',
                       verticalAlign: 'top',
                       type: 'success'
                     })
-                    this.$emit('new', schedule);
+                    //this.$emit('new', schedule);
                 }else{
                   this.$notify(
                     {
