@@ -75,15 +75,21 @@ class ScheduleController extends Controller
 
     public function update(Request $request, $id)
     {
+
+
         if(count($request->HorarioLunes) % 2 == 0 && count($request->HorarioMartes) % 2 == 0 && count($request->HorarioMiercoles) % 2 == 0 && count($request->HorarioJueves) % 2 == 0 && count($request->HorarioViernes) % 2 == 0 && count($request->HorarioSabado) % 2 == 0 && count($request->HorarioDomingo) % 2 == 0)
         {
-            // Agregar Horario
+
+            //Agregar Horario
             $horario = Schedule::find($id);
             $horario->nombre  = $request->nombre;
             $horario->save();
-            //Eliminar programas del hoarrio
-            $programs = findPrograms($id);
-            $programs->delete();
+
+            //Eliminar programas del horario
+            $programs = DB::table('programs')
+            ->where('schedule_id',$id)
+            ->delete();
+
             // Agregar programas del horario
             for ($i = 1; $i <= 7; $i++) {
                 switch (count($request->todos[$i - 1])) {
@@ -111,9 +117,11 @@ class ScheduleController extends Controller
                         break;
                 }
             }
+
             $horario->save = true;
             return $horario;
         }
+        
         $horario->save = false;
         return $horario;
     }

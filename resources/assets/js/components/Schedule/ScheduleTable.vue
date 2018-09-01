@@ -30,7 +30,7 @@ export default {
                       verticalAlign: 'top',
                       type: 'success'
                     })
-                    //this.$emit('delete');
+                    this.$emit('delete');
                 });
 
                 }

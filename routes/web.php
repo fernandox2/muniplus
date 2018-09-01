@@ -26,3 +26,7 @@ Route::apiResource('/departaments','DepartamentController');
 Route::apiResource('/schedules','ScheduleController');
 
 Route::get('/schedules/programs/{id}', 'ScheduleController@findPrograms');
+
+Route::apiResource('/relationships','RelationShipController');
+
+Route::apiResource('/marks','MarkController');

@@ -11,7 +11,7 @@ import Notifications from '@/pages/Notifications.vue'
 import Employee from '@/pages/Employee.vue'
 import Departament from '@/pages/Departament.vue'
 import Schedule from '@/pages/Schedule.vue'
-
+import Relationship from '@/pages/Relationship.vue'
 
 const routes = [
   {
@@ -38,6 +38,11 @@ const routes = [
         path: 'schedule',
         name: 'Administración de Horarios',
         component: Schedule
+      },
+      {
+        path: 'relationship',
+        name: 'Administración de Relaciones',
+        component: Relationship
       },
       {
         path: 'user',

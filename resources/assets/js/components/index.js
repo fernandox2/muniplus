@@ -19,6 +19,10 @@ import NewDepartament from './Departament/DepartamentNew.vue'
 import TableSchedule from './Schedule/ScheduleTable.vue'
 import NewSchedule from './Schedule/ScheduleNew.vue'
 
+//Relationship
+import TableRelationship from './Relationship/RelationshipTable.vue'
+import NewRelationship from './Relationship/RelationshipNew.vue'
+
 export {
   ChartCard,
   NavTabsCard,
@@ -31,5 +35,7 @@ export {
   TableDepartament,
   NewDepartament,
   TableSchedule,
-  NewSchedule
+  NewSchedule,
+  TableRelationship,
+  NewRelationship
 }

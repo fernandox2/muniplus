@@ -32,7 +32,7 @@
                     @next="++pagination.currentPage">
         </pagination>
 
-        <md-dialog :md-active.sync="showDialog">
+        <md-dialog :md-active.sync="showDialog" class="scrollbar">
       <md-dialog-title class="text-center">Datos del Horario <p>Formato 24 Hrs.</p></md-dialog-title>
       <form novalidate class="md-layout">
           <div class="md-layout-item md-small-size-100 md-size-100">
@@ -439,6 +439,10 @@ export default{
   }
   .md-dialog{
         padding:20px;
+  }
+
+  .scrollbar{
+    overflow:auto !important;
   }
 
 </style>
