@@ -2,21 +2,17 @@
   <div class="content">
     <div class="departament">
       <NewDepartament @new="addDepartament"></NewDepartament>
-              <div class="tableFilters">
-            <input class="input form-control pull-left" type="text" v-model="search" placeholder="Buscar ..."
-                   @input="resetPagination()">
 
-            <div class="control pull-right">
-                <div class="select">
-                    <select v-model="length" @change="resetPagination()" class="form-control">
-                        <option value="5">5</option>
-                        <option value="10">10</option>
-                        <option value="20">20</option>
-                    </select>
-                </div>
-            </div>
-        </div>
-        <br>
+      <form class="form-inline md-form form-sm">       
+            <i class="fa fa-search" aria-hidden="true"></i>
+            <input class="form-control form-control-sm ml-3 w-75 search" type="text" v-model="search" placeholder="Buscar ..." aria-label="Search" accept=""input="resetPagination()">
+            <select v-model="length" @change="resetPagination()" class="form-control browser-default select">
+              <option value="5">5</option>
+              <option value="10">10</option>
+              <option value="20">20</option>
+          </select>
+        </form>
+
       <datatable :columns="columns" :sortKey="sortKey" :sortOrders="sortOrders" @sort="sortBy">
           <TableDepartament
             v-for="(departament, index) in paginated"
@@ -297,6 +293,16 @@ export default{
   .img-responsive{
         max-height: 150px;
         margin:0px auto;
+  }
+
+  .search{
+    max-width:350px;
+    display:inline-block !important; 
+  }
+
+  .select{
+    max-width:30px;
+    display:inline-block !important; 
   }
 
 </style>

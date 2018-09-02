@@ -24,7 +24,7 @@
         <md-icon>swap_horiz</md-icon>
         <p>Relaciones</p>
       </sidebar-link>
-      <sidebar-link to="/marks">
+      <sidebar-link to="/assistance">
         <md-icon>fingerprint</md-icon>
         <p>Registros de Asistencia</p>
       </sidebar-link>

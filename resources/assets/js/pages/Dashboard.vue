@@ -1,7 +1,7 @@
 <template>
   <div class="content">
     <div class="md-layout">
-      <div class="md-layout-item md-medium-size-100 md-xsmall-size-100 md-size-33">
+  <!--    <div class="md-layout-item md-medium-size-100 md-xsmall-size-100 md-size-33">
         <chart-card
           :chart-data="dailySalesChart.data"
           :chart-options="dailySalesChart.options"
@@ -64,7 +64,7 @@
             </div>
           </template>
         </chart-card>
-      </div>
+      </div>-->
       <div class="md-layout-item md-medium-size-50 md-xsmall-size-100 md-size-25">
         <stats-card data-background-color="green">
           <template slot="header">

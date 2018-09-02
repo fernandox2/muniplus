@@ -4,9 +4,9 @@
         <md-table-cell>{{ employee.nombre }}</md-table-cell>
         <md-table-cell>{{ employee.correo }}</md-table-cell>
         <md-table-cell>{{ employee.codigo }}</md-table-cell>
-        <md-table-cell>
-        <md-button class="md-fab md-info" v-on:click.prevent="onClickEdit()"><md-icon>edit</md-icon></md-button> 
-        <md-button class="md-fab md-danger" v-on:click.prevent="onClickDelete()"><md-icon>delete</md-icon></md-button>
+        <md-table-cell><p class="centrar">
+        <button v-on:click.prevent="onClickEdit()" type="button" class="md-button md-just-icon md-simple md-primary md-theme-default"><div class="md-ripple"><div class="md-button-content"><i class="md-icon md-icon-font md-theme-default">edit</i> </div> <span></span></div></button>
+        <button v-on:click.prevent="onClickDelete()" type="button" class="md-button md-just-icon md-simple md-danger md-theme-default"><div class="md-ripple"><div class="md-button-content"><i class="md-icon md-icon-font md-theme-default">close</i> </div> <span></span></div></button></p>
         </md-table-cell>
       </md-table-row>
 </template>
@@ -52,5 +52,10 @@ export default {
 <style lang="scss" scoped>
   .md-icon {
     margin-right:20px;
+  }
+
+  .centrar{
+    max-width:100px;
+    margin:0px auto !important;
   }
 </style>
