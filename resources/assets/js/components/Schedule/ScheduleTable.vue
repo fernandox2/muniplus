@@ -34,10 +34,6 @@ export default {
                 });
 
                 }
-                else 
-                {
-                    
-                }
             },
             onClickEdit() {
                 this.$emit('actualizar');

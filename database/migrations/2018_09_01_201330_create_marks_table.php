@@ -20,7 +20,8 @@ class CreateMarksTable extends Migration
             $table->time('hora');
             $table->date('fecha');
             $table->integer('dia');
-            $table->string('ubicacion');
+            $table->string('ubicacion')->nullable();
+            $table->boolean('calculada')->default(false);
             $table->string('checksum')->nullable();
             $table->string('comentario')->nullable();
             $table->foreign('type_mark_id')->references('id')->on('type_marks');

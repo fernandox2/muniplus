@@ -12,10 +12,10 @@ use Illuminate\Support\Facades\Log;
 class ProcesaMarcas extends Command
 {
 
-    protected $signature = 'marks:update';
+    protected $signature = 'marks:update:types';
 
 
-    protected $description = 'Procesa marcas para verificar horas trabajadas, cantidad de marcas, etc';
+    protected $description = 'Procesa marcas para verificar sus tipos';
 
 
     public function __construct()
@@ -138,7 +138,7 @@ class ProcesaMarcas extends Command
             $employee = DB::table('employees')
             ->where('codigo', $no_procesadas[$i]->codigo)
             ->first();
-
+            if(isset($employee)){
             // Definir el horario del empleado sin turnos
             $programs = DB::table('relationships')
             ->join('schedules', 'schedules.id', '=', 'relationships.schedule_id')
@@ -146,7 +146,6 @@ class ProcesaMarcas extends Command
             ->select('relationships.*','programs.*','schedules.nombre as nombreHorario')
             ->where('relationships.employee_id', $employee->id)
             ->where('programs.dia_id',$no_procesadas[$i]->dia)
-            ->where('relationships.turn',false)
             ->get();
 
             // Si solo tiene un horario
@@ -212,6 +211,8 @@ class ProcesaMarcas extends Command
                 $mark->checksum = md5($mark->id . "romero2010");
                 // Guarda marca procesada
                 $mark->save();
+            }
+
             }
 
             }  
