@@ -4,27 +4,27 @@
         <nav>
             <ul>
               <li>
-                <router-link :to="{path:'/dashboard'}">Home</router-link>
+                <router-link :to="{path:'/dashboard'}">Panel de Control</router-link>
               </li>
                 <li>
                     <a href="#">
-                        Company
+                        Relaciones
                     </a>
                 </li>
                 <li>
                     <a href="#">
-                        Portfolio
+                        Empleados
                     </a>
                 </li>
                 <li>
                     <a href="#">
-                        Blog
+                        Horarios
                     </a>
                 </li>
             </ul>
         </nav>
         <div class="copyright text-center">
-          &copy; {{ new Date().getFullYear() }} <a href="https://www.creative-tim.com/?ref=mdf-vuejs" target="_blank">Creative Tim</a>, made with <i class="fa fa-heart heart"></i> for a better web
+          &copy; {{ new Date().getFullYear() }} <a href="https://www.facebook.com/r0mer02" target="_blank">Fernando</a>, Desarrollado con <i class="fa fa-heart heart"></i> para el mundo =)
         </div>
     </div>
   </footer>

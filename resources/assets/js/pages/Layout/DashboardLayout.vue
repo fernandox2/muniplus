@@ -24,6 +24,10 @@
         <md-icon>swap_horiz</md-icon>
         <p>Relaciones</p>
       </sidebar-link>
+      <sidebar-link to="/marks">
+        <md-icon>fingerprint</md-icon>
+        <p>Registros de Asistencia</p>
+      </sidebar-link>
     </side-bar>
 
     <div class="main-panel">

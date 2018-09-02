@@ -12957,6 +12957,10 @@ function withParams(paramsOrClosure, maybeValidator) {
 //
 //
 //
+//
+//
+//
+//
 
 
 
@@ -43441,7 +43445,7 @@ var render = function() {
             "li",
             [
               _c("router-link", { attrs: { to: { path: "/dashboard" } } }, [
-                _vm._v("Home")
+                _vm._v("Panel de Control")
               ])
             ],
             1
@@ -43461,15 +43465,15 @@ var render = function() {
           "a",
           {
             attrs: {
-              href: "https://www.creative-tim.com/?ref=mdf-vuejs",
+              href: "https://www.facebook.com/r0mer02",
               target: "_blank"
             }
           },
-          [_vm._v("Creative Tim")]
+          [_vm._v("Fernando")]
         ),
-        _vm._v(", made with "),
+        _vm._v(", Desarrollado con "),
         _c("i", { staticClass: "fa fa-heart heart" }),
-        _vm._v(" for a better web\n      ")
+        _vm._v(" para el mundo =)\n      ")
       ])
     ])
   ])
@@ -43481,7 +43485,7 @@ var staticRenderFns = [
     var _c = _vm._self._c || _h
     return _c("li", [
       _c("a", { attrs: { href: "#" } }, [
-        _vm._v("\n                      Company\n                  ")
+        _vm._v("\n                      Relaciones\n                  ")
       ])
     ])
   },
@@ -43491,7 +43495,7 @@ var staticRenderFns = [
     var _c = _vm._self._c || _h
     return _c("li", [
       _c("a", { attrs: { href: "#" } }, [
-        _vm._v("\n                      Portfolio\n                  ")
+        _vm._v("\n                      Empleados\n                  ")
       ])
     ])
   },
@@ -43501,7 +43505,7 @@ var staticRenderFns = [
     var _c = _vm._self._c || _h
     return _c("li", [
       _c("a", { attrs: { href: "#" } }, [
-        _vm._v("\n                      Blog\n                  ")
+        _vm._v("\n                      Horarios\n                  ")
       ])
     ])
   }
@@ -43862,6 +43866,17 @@ var render = function() {
               _c("md-icon", [_vm._v("swap_horiz")]),
               _vm._v(" "),
               _c("p", [_vm._v("Relaciones")])
+            ],
+            1
+          ),
+          _vm._v(" "),
+          _c(
+            "sidebar-link",
+            { attrs: { to: "/marks" } },
+            [
+              _c("md-icon", [_vm._v("fingerprint")]),
+              _vm._v(" "),
+              _c("p", [_vm._v("Registros de Asistencia")])
             ],
             1
           )
