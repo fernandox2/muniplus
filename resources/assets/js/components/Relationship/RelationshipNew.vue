@@ -49,10 +49,7 @@
         <div class="md-layout-item md-small-size-100 md-size-100">
           <div class="form-group">
             <label>¿Trabaja por turnos?:</label><br>
-            <label class="bs-switch">
-              <input type="checkbox" name="turn" v-model="turn">
-              <span class="slider round"></span>
-            </label>
+            <md-switch v-model="turn" class="md-primary">Boolean</md-switch>
           </div>
         </div>
 

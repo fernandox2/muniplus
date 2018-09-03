@@ -23,6 +23,9 @@ import NewSchedule from './Schedule/ScheduleNew.vue'
 import TableRelationship from './Relationship/RelationshipTable.vue'
 import NewRelationship from './Relationship/RelationshipNew.vue'
 
+//Assistance
+import TableAssistance from './Assistance/AssistanceTable.vue'
+
 export {
   ChartCard,
   NavTabsCard,
@@ -37,5 +40,6 @@ export {
   TableSchedule,
   NewSchedule,
   TableRelationship,
-  NewRelationship
+  NewRelationship,
+  TableAssistance
 }

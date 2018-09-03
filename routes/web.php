@@ -29,4 +29,6 @@ Route::get('/schedules/programs/{id}', 'ScheduleController@findPrograms');
 
 Route::apiResource('/relationships','RelationShipController');
 
-Route::apiResource('/marks','MarkController');
+Route::apiResource('/assistances','AssistanceController');
+
+Route::get('/assistances/fechas/{inicio}/{fin}', 'AssistanceController@filtrarFechas');

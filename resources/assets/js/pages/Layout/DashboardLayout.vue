@@ -28,6 +28,10 @@
         <md-icon>fingerprint</md-icon>
         <p>Registros de Asistencia</p>
       </sidebar-link>
+      <sidebar-link to="/send">
+        <md-icon>mail</md-icon>
+        <p>Envío de Asistencia</p>
+      </sidebar-link>
     </side-bar>
 
     <div class="main-panel">
