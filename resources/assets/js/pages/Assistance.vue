@@ -1,24 +1,29 @@
 <template>
   <div class="content">
+    
     <div class="row">
 
       <div class="col">
+
           <md-field class="pull-right search">
             <label>Busqueda avanzada</label>
             <md-input v-model="search"></md-input>
           </md-field>
 
         <div class="pull-left">
-          <md-field class="fechas">
-            <md-icon>event</md-icon>
-            <label>Inicio</label>
-            <md-input v-model="inicio"></md-input>
-          </md-field>
+          
+          <md-field>
+            
+            <div>
+              <span><md-icon>event</md-icon> Inicio</span>
+              <md-input type="date" v-model="inicio"></md-input>
+            </div>
 
-          <md-field class="fechas">
-            <md-icon>event</md-icon>
-            <label>Fin</label>
-            <md-input v-model="fin"></md-input>
+            <div>
+              <span><md-icon>event</md-icon> Fin</span>
+            <md-input type="date" v-model="fin"></md-input>
+          </div>
+          <md-button class="md-raised md-primary" @click="filtrar">Filtrar</md-button>
           </md-field>
 
         </div>
@@ -27,7 +32,8 @@
 
     </div>
 
-      <datatable :columns="columns" :sortKey="sortKey" :sortOrders="sortOrders" @sort="sortBy">
+
+    <datatable :columns="columns" :sortKey="sortKey" :sortOrders="sortOrders" @sort="sortBy">
           <TableAssistance
             v-for="(assistance, index) in paginated"
             :key="assistance.id"
@@ -39,10 +45,10 @@
 
       <br>
 
-        <pagination :pagination="pagination" :client="true" :filtered="filteredProjects"
+      <pagination :pagination="pagination" :client="true" :filtered="filteredProjects"
                     @prev="--pagination.currentPage"
                     @next="++pagination.currentPage">
-        </pagination>
+      </pagination>
 
   
 </div>
@@ -120,14 +126,15 @@ export default{
                     });
         },
 
-        filtrar(){
-          alert(this.inicio);
-          /*if(this.inicio != "" && this.fin != ""){
-              axios.get(`/assistances/fechas/${this.inicio}/${this.fin}`).then(response => {
-                  const reg = response.data;
-                  console.log(reg);
+    filtrar(){
+
+      if(this.inicio != null && this.fin != null){
+
+        axios.get(`/assistances/fechas/${this.inicio}/${this.fin}`).then(response => {
+                  this.assistances = response.data;
+                  this.pagination.total = this.assistances.length;
               });
-          }*/
+          }
         },
         paginate(array, length, pageNumber) {
                 this.pagination.from = array.length ? ((pageNumber - 1) * length) + 1 : ' ';

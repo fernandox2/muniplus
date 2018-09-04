@@ -26,6 +26,7 @@ class AssistanceController extends Controller
         $con = DB::table('assistances')
         ->join('employees', 'employees.codigo', '=', 'assistances.codigo')
         ->where('calculada',true)
+        ->whereBetween('assistances.fecha', [$inicio, $fin])
         ->select('assistances.*','employees.nombre as funcionario')
         ->OrderBy('assistances.fecha','desc')
         ->get();
