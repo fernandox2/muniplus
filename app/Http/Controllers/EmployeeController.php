@@ -18,6 +18,18 @@ class EmployeeController extends Controller
         return $cursos;
     }
 
+    public function employeebydepartament($id){
+
+        $empleados = DB::table('employees')
+        ->join('relationships', 'relationships.employee_id', '=', 'employees.id')
+        ->join('departaments', 'departaments.id', '=', 'relationships.departament_id')
+        ->where('departaments.id',$id)
+        ->select('employees.*')
+        ->OrderBy('nombre','asc')
+        ->get();
+
+        return $empleados;
+    }
 
     public function store(Request $request)
     {
