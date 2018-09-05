@@ -7,6 +7,7 @@ use App\Assistance;
 use App\Event;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 class CalculaHorasTrabajadas extends Command
 {
@@ -56,6 +57,15 @@ class CalculaHorasTrabajadas extends Command
                 $cons->save();
                 Log::info("Se calcularon ". $horas_trabajadas . " de trabajo para el consolidado " . $con->id);
 
+            }elseif(isset($con->entrada2) && isset($con->salida2)){
+
+                $horas_trabajadas = resta($con->entrada2, $con->salida2);
+                $cons = Assistance::find($con->id);
+                $cons->horas_trabajadas = $horas_trabajadas;
+                $cons->calculada = true;
+                $cons->save();
+                Log::info("Se calcularon ". $horas_trabajadas . " de trabajo para el consolidado " . $con->id);
+
             }else{
                 
                 $employee = DB::table('employees')
@@ -71,9 +81,24 @@ class CalculaHorasTrabajadas extends Command
                 $evento->evento = "El funcionario " . $employee->nombre ." no tiene todas sus marcas hoy " . $con->fecha;
                 $evento->tipo = "Error";
                 $evento->save();
-
                 Log::info("El regsitro no tiene todas las marcas");
             }
+
+            // Envia correo con asistencia el día
+            $asistencia = DB::table('assistances')
+            ->join('employees','employees.codigo','=','assistances.codigo')
+            ->where('assistances.id',$con->id)
+            ->first();
+
+            if($asistencia->correo <> ""){
+                Mail::to($asistencia->correo)->send(new \App\Mail\EnvioAsistencia($asistencia));
+            }else{
+                $evento = new Event();
+                $evento->evento = "El funcionario " . $employee->nombre ." no tiene correo electrónico asociado.";
+                $evento->tipo = "Error";
+                $evento->save();
+            }
+            
             
         }
 

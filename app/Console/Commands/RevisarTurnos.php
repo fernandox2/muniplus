@@ -11,14 +11,14 @@ class RevisarTurnos extends Command
      *
      * @var string
      */
-    protected $signature = 'command:name';
+    protected $signature = 'schedules:turn';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Asigna horarios de acuerdo a la fecha';
 
     /**
      * Create a new command instance.

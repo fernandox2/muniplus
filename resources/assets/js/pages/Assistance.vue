@@ -177,7 +177,7 @@ doc.autoTable(columns, rows, {
     }
 });
 var timeStampInMs = window.performance && window.performance.now && window.performance.timing && window.performance.timing.navigationStart ? window.performance.now() + window.performance.timing.navigationStart : Date.now();
-doc.save(timeStampInMs+'.pdf');
+doc.save(timeStampInMs +'.pdf');
       },
         getassistances(url = '/assistances') {
                 axios.get(url, {params: this.tableData})

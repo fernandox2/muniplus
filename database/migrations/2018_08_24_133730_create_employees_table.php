@@ -17,7 +17,7 @@ class CreateEmployeesTable extends Migration
             $table->increments('id');
             $table->string('nombre');
             $table->string('rut');
-            $table->string('correo');
+            $table->string('correo')->nullable();
             $table->integer('codigo')->unique();
             $table->timestamps();
         });

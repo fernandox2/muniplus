@@ -44,4 +44,3 @@ Route::get('/assistances/fechasdepartament/{inicio}/{fin}/{codigo}', 'Assistance
 Route::get('/assistances/departamento/{codigo}', 'AssistanceController@filtrarDepartamento');
 
 Route::get('/assistances/employee/{codigo}', 'AssistanceController@filtrarFuncionarios');
-
