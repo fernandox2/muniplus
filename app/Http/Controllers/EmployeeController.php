@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Employee;
+use App\Event;
 use Illuminate\Support\Facades\DB;
 
 class EmployeeController extends Controller
@@ -44,6 +45,10 @@ class EmployeeController extends Controller
         {
             $empleado->save();
             $empleado->save = true;
+            $evento = new Event();
+            $evento->evento = "Se creó correctamente el funcionario " . $empleado->nombre;
+            $evento->tipo = "Info";
+            $evento->save();
             return $empleado;
         }else{
             $empleado->save = false;
@@ -70,6 +75,10 @@ class EmployeeController extends Controller
         {
             $empleado->save();
             $empleado->save = true;
+            $evento = new Event();
+            $evento->evento = "Se modificó correctamente el funcionario " . $empleado->nombre;
+            $evento->tipo = "Info";
+            $evento->save();
             return $empleado;
         }else{
             $empleado->save = false;

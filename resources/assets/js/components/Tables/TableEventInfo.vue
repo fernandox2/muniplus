@@ -12,7 +12,7 @@
 
 <script>
 export default {
-  name: 'ordered-table',
+  name: 'table-event-info',
   props: {
     tableHeaderColor: {
       type: String,
@@ -20,7 +20,7 @@ export default {
     }
   },
   created(){
-    this.getFiveLastErrors();
+    this.getFiveLastInfo();
   },
   data () {
     return {
@@ -29,16 +29,15 @@ export default {
     }
   },
   methods:{
-    getFiveLastErrors(){
-      axios.get('/marks/errors/five').then(response => { this.eventsError = response.data; }).catch(errors => { console.log(errors); })
+    getFiveLastInfo(){
+      axios.get('/marks/info/five').then(response => { this.eventsError = response.data; }).catch(errors => { console.log(errors); })
     },
-
     actualizar: function () {
-      setInterval(this.getFiveLastErrors, 10000);
-   }
-  },
-  mounted(){
+      setInterval(this.getFiveLastInfo, 10000);
+   },
+    mounted(){
     this.actualizar()
   }
-};
+  }
+}
 </script>

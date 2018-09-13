@@ -59,7 +59,7 @@
     </md-dialog>
   </div>
   
-<md-button class="md-primary" @click="showDialog = true"> Nuevo Empleado</md-button>
+<md-button class="md-primary" @click="showDialog = true"> Nueva Relación</md-button>
 
   </div>
 </template>

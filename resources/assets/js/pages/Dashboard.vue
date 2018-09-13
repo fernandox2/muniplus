@@ -68,58 +68,38 @@
       <div class="md-layout-item md-medium-size-50 md-xsmall-size-100 md-size-25">
         <stats-card data-background-color="green">
           <template slot="header">
-            <md-icon >store</md-icon>
+            <md-icon >fingerprint</md-icon>
           </template>
 
           <template slot="content">
-            <p class="category">Revenue</p>
-            <h3 class="title">$34,245</h3>
+            <p class="category">Registros</p>
+            <h3 class="title">{{ MarcasHoy }}</h3>
           </template>
 
           <template slot="footer">
             <div class="stats">
                 <md-icon>date_range</md-icon>
-                Last 24 Hours
+                Las Últimas 24 Horas
             </div>
           </template>
         </stats-card>
       </div>
       <div class="md-layout-item md-medium-size-50 md-xsmall-size-100 md-size-25">
-        <stats-card data-background-color="orange">
+        <stats-card data-background-color="purple">
           <template slot="header">
-            <md-icon >content_copy</md-icon>
+            <md-icon >person</md-icon>
           </template>
 
           <template slot="content">
-            <p class="category">Used Space</p>
-            <h3 class="title">49/50
-                <small>GB</small>
+            <p class="category">Funcionarios Habilitados</p>
+            <h3 class="title"> {{ Funcionarios }}
             </h3>
           </template>
 
           <template slot="footer">
             <div class="stats">
-              <md-icon class="text-danger">warning</md-icon>
-              <a href="#pablo">Get More Space...</a>
-            </div>
-          </template>
-        </stats-card>
-      </div>
-      <div class="md-layout-item md-medium-size-50 md-xsmall-size-100 md-size-25">
-        <stats-card data-background-color="red">
-          <template  slot="header">
-            <md-icon >info_outline</md-icon>
-          </template>
-
-          <template slot="content">
-            <p class="category">Fixed Issues</p>
-            <h3 class="title">75</h3>
-          </template>
-
-          <template slot="footer">
-            <div class="stats">
-               <md-icon>local_offer</md-icon>
-               Tracked from Github
+              <md-icon>schedule</md-icon>
+              Con horarios o turnos definidos
             </div>
           </template>
         </stats-card>
@@ -127,22 +107,46 @@
       <div class="md-layout-item md-medium-size-50 md-xsmall-size-100 md-size-25">
         <stats-card data-background-color="blue">
           <template  slot="header">
-            <i class="fab fa-twitter"></i>
+            <md-icon>business</md-icon>
           </template>
 
           <template slot="content">
-            <p class="category">Folowers</p>
-            <h3 class="title">+245</h3>
+            <p class="category">Departamentos</p>
+            <h3 class="title">{{ Departamentos }}</h3>
           </template>
 
           <template slot="footer">
             <div class="stats">
-               <md-icon>update</md-icon>
-               Just Updated
+               <md-icon>local_offer</md-icon>
+               Unidades o Departamentos Activos
             </div>
           </template>
         </stats-card>
       </div>
+      <div class="md-layout-item md-medium-size-50 md-xsmall-size-100 md-size-25">
+        <stats-card data-background-color="red">
+          <template  slot="header">
+            <md-icon>event</md-icon>
+          </template>
+
+          <template slot="content">
+            <p class="category">Errores</p>
+            <h3 class="title">{{ Eventos }}
+              <small>/ 24 Hrs</small>
+            </h3>
+
+          </template>
+
+          <template slot="footer">
+            <div class="stats">
+               <md-icon>timer</md-icon>
+               Actualizado cada 5 min.
+            </div>
+          </template>
+        </stats-card>
+      </div>
+
+<!--
       <div class="md-layout-item md-medium-size-100 md-xsmall-size-100 md-size-50">
         <md-card>
           <md-card-header data-background-color="orange">
@@ -175,6 +179,31 @@
           </template>
         </nav-tabs-card>
       </div>
+    -->
+          <div class="md-layout-item md-medium-size-100 md-xsmall-size-100 md-size-50">
+        <md-card>
+          <md-card-header data-background-color="red">
+            <h4 class="title">Eventos de Error</h4>
+            <p class="category">Últimos 5 eventos de error</p>
+          </md-card-header>
+          <md-card-content>
+            <ordered-table table-header-color="red"></ordered-table>
+          </md-card-content>
+        </md-card>
+      </div>
+
+            <div class="md-layout-item md-medium-size-100 md-xsmall-size-100 md-size-50">
+        <md-card>
+          <md-card-header data-background-color="blue">
+            <h4 class="title">Eventos de Información</h4>
+            <p class="category">Últimos 5 eventos de información</p>
+          </md-card-header>
+          <md-card-content>
+            <table-event-info table-header-color="blue"></table-event-info>
+          </md-card-content>
+        </md-card>
+      </div>
+
     </div>
   </div>
 </template>
@@ -185,7 +214,8 @@ import {
   ChartCard,
   NavTabsCard,
   NavTabsTable,
-  OrderedTable
+  OrderedTable,
+  TableEventInfo
 } from '@/components'
 
 export default{
@@ -194,10 +224,21 @@ export default{
     ChartCard,
     NavTabsCard,
     NavTabsTable,
-    OrderedTable
+    OrderedTable,
+    TableEventInfo
+  },
+  created(){
+    this.getMarcasHoy();
+    this.getFuncionariosHabilitados();
+    this.getDepartamentos();
+    this.getEventosErrorHoy();
   },
   data () {
     return {
+      Eventos:0,
+      Departamentos:0,
+      Funcionarios:0,
+      MarcasHoy:0,
       dailySalesChart: {
         data: {
           labels: ['M', 'T', 'W', 'T', 'F', 'S', 'S'],
@@ -274,6 +315,35 @@ export default{
         ]
       }
     }
+  },
+  methods:{
+    getMarcasHoy(){
+        axios.get('/marks/today').then(response => { this.MarcasHoy = response.data; }).catch(errors => { console.log(errors); })
+    },
+
+    getFuncionariosHabilitados(){
+      axios.get('/relationships').then(response => { const res = response.data; this.Funcionarios = res.length; }).catch(errors => { console.log(errors); })
+    },
+
+    getDepartamentos(){
+      axios.get('/departaments').then(response => { const res = response.data; this.Departamentos = res.length; }).catch(errors => { console.log(errors); })
+    },
+
+    getEventosErrorHoy(){
+      axios.get('/marks/errors/today').then(response => { const res = response.data; this.Eventos = res; }).catch(errors => { console.log(errors); })
+    },
+
+    actualizar: function () {
+      setInterval(this.getMarcasHoy, 60000);
+      setInterval(this.getFuncionariosHabilitados, 60000);
+      setInterval(this.getDepartamentos, 60000);
+      setInterval(this.getEventosErrorHoy, 60000);
+   }
+
+  },
+
+  mounted(){
+    this.actualizar()
   }
-}
+};
 </script>

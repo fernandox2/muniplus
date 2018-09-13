@@ -1,5 +1,5 @@
 <template>
-  <ul class="nav nav-mobile-menu">
+<!--  <ul class="nav nav-mobile-menu">
     <li>
       <md-field>
         <label>Buscar</label>
@@ -30,7 +30,7 @@
       <a href="#" data-toggle="dropdown" class="dropdown-toggle"><i class="material-icons">person</i>
       <p>Profile</p></a>
     </li>
-  </ul>
+  </ul>-->
 </template>
 <script>
 export default {

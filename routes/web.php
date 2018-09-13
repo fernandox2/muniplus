@@ -33,6 +33,8 @@ Route::apiResource('/relationships','RelationShipController');
 
 Route::apiResource('/assistances','AssistanceController');
 
+Route::apiResource('/turns','TurnController');
+
 Route::get('/assistances/fechas/{inicio}/{fin}', 'AssistanceController@filtrarFechas');
 
 Route::get('/assistances/todos/{codigo}/{inicio}/{fin}/{depto}', 'AssistanceController@filtrarFuncionariosFechasDepartamentos');
@@ -44,3 +46,13 @@ Route::get('/assistances/fechasdepartament/{inicio}/{fin}/{codigo}', 'Assistance
 Route::get('/assistances/departamento/{codigo}', 'AssistanceController@filtrarDepartamento');
 
 Route::get('/assistances/employee/{codigo}', 'AssistanceController@filtrarFuncionarios');
+
+Route::get('/marks/today', 'MarkController@FindMarksToDay');
+
+Route::get('/marks/errors/today', 'MarkController@ErrorsToDay');
+
+Route::get('/marks/errors/five', 'MarkController@LastFiveEventError');
+
+Route::get('/marks/info/five', 'MarkController@LastFiveEventInfo');
+
+

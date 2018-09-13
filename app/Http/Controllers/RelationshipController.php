@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Relationship;
+use App\Event;
 use Illuminate\Support\Facades\DB;
 
 class RelationshipController extends Controller
@@ -42,9 +43,18 @@ class RelationshipController extends Controller
             $relation->turn = $request->turn;
 
             $relation->save();
-
             $relation->save = true;
-            
+
+            $employee = DB::table('employees')
+            ->where('id',$relation->employee_id)
+            ->first();
+
+            $evento = new Event();
+            $evento->evento = "Se creó una nueva relación para el funcionario " . $employee->nombre;
+            $evento->tipo = "Info";
+            $evento->save();
+
+
             return $relation;        
         }
 
@@ -68,7 +78,11 @@ class RelationshipController extends Controller
             $relation->save();
 
             $relation->save = true;
-            
+            $evento = new Event();
+            $evento->evento = "Se actualizó la relación con el ID " . $relation->id;
+            $evento->tipo = "Info";
+            $evento->save();
+            return $relation;  
             return $relation;        
         }
 

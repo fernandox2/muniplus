@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Departament;
+use App\Event;
 use Illuminate\Support\Facades\DB;
 
 class DepartamentController extends Controller
@@ -37,6 +38,12 @@ class DepartamentController extends Controller
 
         $dep->save();
         $dep->save = true;
+
+        $evento = new Event();
+        $evento->evento = "Se creó correctamente el departamento " . $dep->nombre;
+        $evento->tipo = "Info";
+        $evento->save();
+
         return $dep;
 
     }
@@ -69,6 +76,11 @@ class DepartamentController extends Controller
 
         $dep->save();
         $dep->save = true;
+
+        $evento = new Event();
+        $evento->evento = "Se actualizó correctamente el departamento " . $dep->nombre;
+        $evento->tipo = "Info";
+        $evento->save();
         return $dep;
     }
 

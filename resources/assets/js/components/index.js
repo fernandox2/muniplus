@@ -5,6 +5,7 @@ import StatsCard from './Cards/StatsCard.vue'
 // Tables
 import NavTabsTable from './Tables/NavTabsTable.vue'
 import OrderedTable from './Tables/OrderedTable.vue'
+import TableEventInfo from './Tables/TableEventInfo.vue'
 import SimpleTable from './Tables/SimpleTable.vue'
 
 // Employees
@@ -26,6 +27,10 @@ import NewRelationship from './Relationship/RelationshipNew.vue'
 //Assistance
 import TableAssistance from './Assistance/AssistanceTable.vue'
 
+//Turn
+import TableTurn from './Turn/TurnTable.vue'
+import NewTurn from './Turn/TurnNew.vue'
+
 export {
   ChartCard,
   NavTabsCard,
@@ -41,5 +46,8 @@ export {
   NewSchedule,
   TableRelationship,
   NewRelationship,
-  TableAssistance
+  TableAssistance,
+  TableEventInfo,
+  TableTurn,
+  NewTurn
 }

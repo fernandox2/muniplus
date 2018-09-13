@@ -11,7 +11,7 @@
           <span class="icon-bar"></span>
         </md-button>
 
-        <div class="md-collapse">
+      <!-- <div class="md-collapse">
           <div class="md-autocomplete">
             <md-autocomplete class="search" v-model="selectedEmployee" :md-options="employees">
               <label>Buscar...</label>
@@ -45,7 +45,7 @@
               <p class="hidden-lg hidden-md">Profile</p>
             </md-list-item>
           </md-list>
-        </div>
+        </div>-->
       </div>
     </div>
 

@@ -3,59 +3,77 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Mark;
+use Illuminate\Support\Facades\DB;
 
 class MarkController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+
     public function index()
     {
         //
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
+
     public function store(Request $request)
     {
         //
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
+
+    public function FindMarksToDay()
     {
-        //
+        $hoy = date("Y-m-d"); 
+        $marks = DB::table('marks')
+        ->where('fecha', $hoy)
+        ->get();
+
+        return count($marks);
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+    public function ErrorsToDay()
+    {
+        $hoy = date("Y-m-d");
+
+        $eventos = DB::table('events')
+        ->where('created_at', $hoy)
+        ->where('tipo', 'Error')
+        ->get();
+
+        return count($eventos);
+    }
+
+    public function LastFiveEventError()
+    {
+        
+        $eventos = DB::table('events')
+        ->where('tipo', 'Error')
+        ->orderBy('created_at', 'desc')
+        ->limit(5)
+        ->get();
+
+        return $eventos;
+    }
+
+    public function LastFiveEventInfo()
+    {
+        
+        $eventos = DB::table('events')
+        ->where('tipo', 'Info')
+        ->orderBy('created_at', 'desc')
+        ->limit(5)
+        ->get();
+
+        return $eventos;
+    }
+
+
     public function update(Request $request, $id)
     {
         //
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+
     public function destroy($id)
     {
         //

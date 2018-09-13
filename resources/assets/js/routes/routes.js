@@ -13,6 +13,7 @@ import Departament from '@/pages/Departament.vue'
 import Schedule from '@/pages/Schedule.vue'
 import Relationship from '@/pages/Relationship.vue'
 import Assistance from '@/pages/Assistance.vue'
+import Turn from '@/pages/Turn.vue'
 
 const routes = [
   {
@@ -22,7 +23,7 @@ const routes = [
     children: [
       {
         path: 'dashboard',
-        name: 'Dashboard',
+        name: 'Panel de Control',
         component: Dashboard
       },
       {
@@ -44,6 +45,11 @@ const routes = [
         path: 'relationship',
         name: 'Administración de Relaciones',
         component: Relationship
+      },
+      {
+        path: 'turn',
+        name: 'Administración de Turnos',
+        component: Turn
       },
       {
         path: 'assistance',

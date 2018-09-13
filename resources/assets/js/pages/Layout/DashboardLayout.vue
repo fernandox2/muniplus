@@ -24,13 +24,13 @@
         <md-icon>swap_horiz</md-icon>
         <p>Relaciones</p>
       </sidebar-link>
+      <sidebar-link to="/turn">
+        <md-icon>group</md-icon>
+        <p>Turnos</p>
+      </sidebar-link>
       <sidebar-link to="/assistance">
         <md-icon>fingerprint</md-icon>
         <p>Registros de Asistencia</p>
-      </sidebar-link>
-      <sidebar-link to="/send">
-        <md-icon>mail</md-icon>
-        <p>Envío de Asistencia</p>
       </sidebar-link>
     </side-bar>
 
@@ -46,14 +46,12 @@
   </div>
 </template>
 <style lang="scss">
-
 </style>
 <script>
 import TopNavbar from './TopNavbar.vue'
 import ContentFooter from './ContentFooter.vue'
 import DashboardContent from './Content.vue'
 import MobileMenu from '@/pages/Layout/MobileMenu.vue'
-
 export default {
   components: {
     TopNavbar,

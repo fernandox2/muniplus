@@ -46,7 +46,11 @@ class CalculaHorasTrabajadas extends Command
                 $cons->horas_trabajadas = $horas_trabajadas;
                 $cons->calculada = true;
                 $cons->save();
-                Log::info("Se calcularon ". $horas_trabajadas . " de trabajo para el consolidado " . $con->id);
+
+                $evento = new Event();
+                $evento->evento = "Se calcularon ". $horas_trabajadas . " de trabajo para el consolidado " . $con->id;
+                $evento->tipo = "Info";
+                $evento->save();
 
             }elseif(isset($con->entrada1) && isset($con->salida1)){
 
@@ -55,7 +59,11 @@ class CalculaHorasTrabajadas extends Command
                 $cons->horas_trabajadas = $horas_trabajadas;
                 $cons->calculada = true;
                 $cons->save();
-                Log::info("Se calcularon ". $horas_trabajadas . " de trabajo para el consolidado " . $con->id);
+                
+                $evento = new Event();
+                $evento->evento = "Se calcularon ". $horas_trabajadas . " de trabajo para el consolidado " . $con->id;
+                $evento->tipo = "Info";
+                $evento->save();
 
             }elseif(isset($con->entrada2) && isset($con->salida2)){
 
@@ -64,7 +72,11 @@ class CalculaHorasTrabajadas extends Command
                 $cons->horas_trabajadas = $horas_trabajadas;
                 $cons->calculada = true;
                 $cons->save();
-                Log::info("Se calcularon ". $horas_trabajadas . " de trabajo para el consolidado " . $con->id);
+                
+                $evento = new Event();
+                $evento->evento = "Se calcularon ". $horas_trabajadas . " de trabajo para el consolidado " . $con->id;
+                $evento->tipo = "Info";
+                $evento->save();
 
             }else{
                 
@@ -81,7 +93,11 @@ class CalculaHorasTrabajadas extends Command
                 $evento->evento = "El funcionario " . $employee->nombre ." no tiene todas sus marcas hoy " . $con->fecha;
                 $evento->tipo = "Error";
                 $evento->save();
-                Log::info("El regsitro no tiene todas las marcas");
+                
+                $evento = new Event();
+                $evento->evento = "Se calcularon ". $horas_trabajadas . " de trabajo para el consolidado " . $con->id;
+                $evento->tipo = "Info";
+                $evento->save();
             }
 
             // Envia correo con asistencia el día
@@ -92,6 +108,10 @@ class CalculaHorasTrabajadas extends Command
 
             if($asistencia->correo <> ""){
                 Mail::to($asistencia->correo)->send(new \App\Mail\EnvioAsistencia($asistencia));
+                $evento = new Event();
+                $evento->evento = "Se envió un correo con su asistencia al funcionario " . $employee->nombre .".";
+                $evento->tipo = "Info";
+                $evento->save();
             }else{
                 $evento = new Event();
                 $evento->evento = "El funcionario " . $employee->nombre ." no tiene correo electrónico asociado.";

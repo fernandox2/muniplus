@@ -57,6 +57,10 @@ class ScheduleController extends Controller
                 }
             }
             $horario->save = true;
+            $evento = new Event();
+            $evento->evento = "Se creó correctamente el horario " . $horario->nombre;
+            $evento->tipo = "Info";
+            $evento->save();
             return $horario;
         }
         $horario->save = false;
@@ -126,6 +130,10 @@ class ScheduleController extends Controller
                 }
 
                 $horario->save = true;
+                $evento = new Event();
+                $evento->evento = "Se modificó correctamente el horario " . $horario->nombre;
+                $evento->tipo = "Info";
+                $evento->save();
                 return $horario;
 
             }
@@ -147,6 +155,9 @@ class ScheduleController extends Controller
             $schedule->delete();
         }
 
-        Log::info("Existen relaciones con el horario que desea eliminar. Borre estás y podrá eliminar el horario.");
+        $evento = new Event();
+        $evento->evento = "Existen datos asociados al horario por lo que no se puede eliminar";
+        $evento->tipo = "Error";
+        $evento->save();
     }
 }
