@@ -62,7 +62,7 @@
 
 export default{
   created(){
-    axios.get('/relationships').then(response => { this.relationships = response.data; }).catch(errors => { console.log(errors); })
+    axios.get('/RelacionesConTurnos').then(response => { this.relationships = response.data; }).catch(errors => { console.log(errors); })
     axios.get('/schedules').then(response => { this.schedules = response.data; }).catch(errors => { console.log(errors); })
   },
     data(){
@@ -89,6 +89,8 @@ export default{
             axios.post('/turns',params).then((response) => {
                 
                 const turno = response.data;
+
+                console.log(turno);
 
                 if(turno.save)
                 {

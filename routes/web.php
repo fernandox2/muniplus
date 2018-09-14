@@ -31,6 +31,8 @@ Route::get('/schedules/programs/{id}', 'ScheduleController@findPrograms');
 
 Route::apiResource('/relationships','RelationShipController');
 
+Route::get('/RelacionesConTurnos', 'RelationShipController@RelationTurn');
+
 Route::apiResource('/assistances','AssistanceController');
 
 Route::apiResource('/turns','TurnController');

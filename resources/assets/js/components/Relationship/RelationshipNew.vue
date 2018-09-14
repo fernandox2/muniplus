@@ -49,7 +49,7 @@
         <div class="md-layout-item md-small-size-100 md-size-100">
           <div class="form-group">
             <label>¿Trabaja por turnos?:</label><br>
-            <md-switch v-model="turn" class="md-primary">Boolean</md-switch>
+            <md-switch v-model="turn" class="md-primary"></md-switch>
           </div>
         </div>
 

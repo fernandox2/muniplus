@@ -85,14 +85,12 @@
         <div class="md-layout-item md-small-size-100 md-size-100">
           <div class="form-group">
             <label>¿Trabaja por turnos?:</label><br>
-            <label class="bs-switch">
-              <input type="checkbox" name="turn" v-model="turn">
-              <span class="slider round"></span>
-            </label>
+            <md-switch v-model="turn" class="md-primary"></md-switch>
           </div>
         </div>
 
-          <md-button class="md-primary close" @click="showDialog = false">Cerrar</md-button>
+
+          <md-button class="md-primary" @click="showDialog = false">Cerrar</md-button>
           <md-button type="submit" class="md-raised md-success">Guardar</md-button>
         </form>
     </md-dialog>
@@ -233,6 +231,8 @@ export default{
         axios.put(`/relationships/${this.id}`, params).then((response) => {
               
               this.relationship = response.data;
+
+              console.log(this.relationship);
               
               this.relationships[index] = this.relationship;
               

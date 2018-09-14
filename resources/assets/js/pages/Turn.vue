@@ -1,7 +1,7 @@
 <template>
   <div class="content">
-    <div class="employee">
-      <nuevo @new="addEmployee"></nuevo>
+    <div class="turn">
+      <nuevo @new="addturn"></nuevo>
 
         <form class="form-inline md-form form-sm">       
             <i class="fa fa-search" aria-hidden="true"></i>
@@ -14,13 +14,13 @@
         </form>
 
       <datatable :columns="columns" :sortKey="sortKey" :sortOrders="sortOrders" @sort="sortBy">
-          <TableEmployee
-            v-for="(employee, index) in paginated"
-            :key="employee.id"
-            :employee="employee"
-            @delete="deleteEmployee(employee)"
-            @actualizar="actualizarEmployee(employee)">
-          </TableEmployee>
+          <TableTurn
+            v-for="(turn, index) in paginated"
+            :key="turn.id"
+            :turn="turn"
+            @delete="deleteTurn(turn)"
+            @actualizar="actualizarTurn(turn)">
+          </TableTurn>
       </datatable>
       <br>
         <pagination :pagination="pagination" :client="true" :filtered="filteredProjects"
@@ -28,60 +28,15 @@
                     @next="++pagination.currentPage">
         </pagination>
   </div>
-  <md-dialog :md-active.sync="showDialog">
-      <md-dialog-title>Datos del Funcionario</md-dialog-title>
-
-      <form novalidate class="md-layout" v-on:submit.prevent="editEmployee()">
-          <div class="md-layout-item md-small-size-100 md-size-100">
-            <md-field>
-              <label>Nombre Completo</label>
-              <md-input v-model="nombre" type="text" required></md-input>
-              <div class="error" v-if="!$v.nombre.required">Campo Obligatorio</div>
-              <div class="error" v-if="!$v.nombre.minLength">El nombre debe tener a lo menos {{$v.nombre.$params.minLength.min}} letras.</div>
-            </md-field>
-          </div>
-
-          <div class="md-layout-item md-small-size-100 md-size-100">
-            <md-field>
-              <label>RUT</label>
-              <md-input v-model="rut" type="text" oninput="checkRut(this)"></md-input>
-              <div class="error" v-if="!$v.rut.required">Campo Obligatorio</div>
-              <div class="error" v-if="!$v.rut.minLength">El nombre debe tener a lo menos {{$v.rut.$params.minLength.min}} letras.</div>
-            </md-field>
-          </div>
-
-          <div class="md-layout-item md-small-size-100 md-size-100">
-            <md-field>
-              <label>Correo Electrónico</label>
-              <md-input v-model="correo" type="email"></md-input>
-            <span class="error" v-if="!$v.correo.required">Campo requerido</span>
-            <span class="error" v-else-if="!$v.correo.email">Correo inválido</span>
-            </md-field>
-          </div>
-
-          <div class="md-layout-item md-small-size-100 md-size-100">
-            <md-field>
-              <label>Código</label>
-              <md-input v-model="codigo" type="email"></md-input>
-              <div class="error" v-if="!$v.codigo.required">Campo Obligatorio</div>
-              <div class="error" v-if="!$v.codigo.between">Sólo debe contener números</div>
-            </md-field>
-          </div>
-          <md-button type="submit" class="md-raised md-success right">Guardar</md-button>
-        </form>
-      <md-dialog-actions>
-        <md-button class="md-primary close" @click="showDialog = false">Close</md-button>
-      </md-dialog-actions>
-    </md-dialog>
 </div>
 </template>
 <script>
-import { required, minLength, between, email } from 'vuelidate/lib/validators';
+
 import Datatable from '../Datatable.vue';
 import Pagination from '../Pagination.vue';
 
 import {
-  TableEmployee,
+  TableTurn,
   NewTurn,
   OrderedTable
 } from '@/components'
@@ -89,25 +44,26 @@ import {
 export default{
     name: 'DialogCustom',
     created(){
-      this.getEmployees();
+      this.getTurns();
     },
     data(){
         let sortOrders = {};
 
         let columns = [
-            {width: '15%', label: 'RUN', name: 'rut'},
-            {width: '30%', label: 'Nombre Completo', name: 'nombre'},
-            {width: '30%', label: 'Correo Electrónico', name: 'correo'},
-            {width: '15%', label: 'Código', name: 'codigo'},
-            {width: '10%', label: 'Acciones', name: 'acciones'}
+            {width: '30%', label: 'Nombre Funcionario', name: 'nameEmployee'},
+            {width: '30%', label: 'Departamento', name: 'nameDepartament'},
+            {width: '19%', label: 'Horario', name: 'schedule'},
+            {width: '7%', label: 'Fecha Inicio', name: 'inicio'},
+            {width: '7%', label: 'Fecha Fin', name: 'fin'},
+            {width: '7%', label: 'Acciones', name: 'acciones'}
         ];
 
         columns.forEach((column) => {
            sortOrders[column.name] = -1;
         });
         return {
-          employees:[],
-          employee:'',
+          turns:[],
+          turn:'',
           columns: columns,
           sortKey: '',
           sortOrders: sortOrders,
@@ -132,41 +88,23 @@ export default{
             },
         }
     },
-    validations: {
-        nombre: {
-          required,
-          minLength: minLength(10)
-        },
-        rut: {
-          required,
-          minLength: minLength(3)
-        },
-        codigo: {
-          required,
-          between: between(1, 9999999999)
-        },
-        correo: {
-          required,
-          email
-        }
-    },
   components: {
     OrderedTable,
-    TableEmployee,
+    TableTurn,
     datatable: Datatable, 
     pagination: Pagination,
     nuevo: NewTurn
   },
   methods: {
-        addEmployee(empleado) {
-            this.employees.push(empleado);
+        addturn(empleado) {
+            this.turns.push(empleado);
         },
-        deleteEmployee(empleado){
-            var index = this.employees.indexOf(empleado);
-            this.employees.splice(index, 1);
+        deleteturn(empleado){
+            var index = this.turns.indexOf(empleado);
+            this.turns.splice(index, 1);
         },
-        actualizarEmployee(empleado){
-          this.employee = empleado;
+        actualizarturn(empleado){
+          this.turn = empleado;
           this.nombre = empleado.nombre;
           this.rut = empleado.rut;
           this.correo = empleado.correo;
@@ -174,7 +112,7 @@ export default{
           this.id = empleado.id;
           this.showDialog = true;
         },
-        editEmployee(){
+        editturn(){
           const params = {
           id: this.id,
           nombre: this.nombre,
@@ -182,21 +120,21 @@ export default{
           correo: this.correo,
           codigo: this.codigo,
         };
-          var index = this.employees.indexOf(this.employee);
-          axios.put(`/employees/${this.id}`, params).then((response) => {
-              this.employee = response.data;
-              this.employees[index] = this.employee;
-              this.getEmployees();
+          var index = this.turns.indexOf(this.turn);
+          axios.put(`/turns/${this.id}`, params).then((response) => {
+              this.turn = response.data;
+              this.turns[index] = this.turn;
+              this.getturns();
               this.id = 0;
               this.nombre = "";
               this.rut = "";
               this.correo = "";
               this.codigo = "";
               this.showDialog = false;
-              if(this.employee.save){
+              if(this.turn.save){
                 this.$notify(
                   {
-                    message: 'Se actualizó correctamente el funcionario:<b> ' + this.employee.nombre + '</b>',
+                    message: 'Se actualizó correctamente el funcionario:<b> ' + this.turn.nombre + '</b>',
                     icon: 'done',
                     horizontalAlign: 'right',
                     verticalAlign: 'top',
@@ -215,11 +153,11 @@ export default{
 
           });
         },
-        getEmployees(url = '/employees') {
+        getTurns(url = '/turns') {
                 axios.get(url, {params: this.tableData})
                     .then(response => {
-                        this.employees = response.data;
-                        this.pagination.total = this.employees.length;
+                        this.turns = response.data;
+                        this.pagination.total = this.turns.length;
                     })
                     .catch(errors => {
                         console.log(errors);
@@ -249,9 +187,9 @@ export default{
         },
     computed: {
         filteredProjects() {
-            let employees = this.employees;
+            let turns = this.turns;
             if (this.search) {
-                employees = employees.filter((row) => {
+                turns = turns.filter((row) => {
                     return Object.keys(row).some((key) => {
                         return String(row[key]).toLowerCase().indexOf(this.search.toLowerCase()) > -1;
                     })
@@ -260,7 +198,7 @@ export default{
             let sortKey = this.sortKey;
             let order = this.sortOrders[sortKey] || 1;
             if (sortKey) {
-                employees = employees.slice().sort((a, b) => {
+                turns = turns.slice().sort((a, b) => {
                     let index = this.getIndex(this.columns, 'name', sortKey);
                     a = String(a[sortKey]).toLowerCase();
                     b = String(b[sortKey]).toLowerCase();
@@ -273,7 +211,7 @@ export default{
                     }
                 });
             }
-            return employees;
+            return turns;
         },
         paginated() {
             return this.paginate(this.filteredProjects, this.length, this.pagination.currentPage);
@@ -283,7 +221,7 @@ export default{
 </script>
 
 <style lang="scss" scoped>
-  .employee {
+  .turn {
     padding-left: 20px;
     padding-right: 20px; 
   }

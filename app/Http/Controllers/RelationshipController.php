@@ -23,6 +23,23 @@ class RelationshipController extends Controller
         return $relations;
     }
 
+    public function RelationTurn()
+    {
+
+        $relations = DB::table('relationships')
+        ->join('employees', 'employees.id', '=', 'relationships.employee_id')
+        ->join('departaments', 'departaments.id', '=', 'relationships.departament_id')
+        ->join('schedules', 'schedules.id', '=', 'relationships.schedule_id')
+        ->where('relationships.turn',true)
+        ->select('relationships.*','employees.nombre as nameEmployee','departaments.nombre as nameDepartament','schedules.nombre as nameSchedule')
+        ->OrderBy('employees.nombre','asc')
+        ->get();
+
+        return $relations;
+
+    }
+
+
     public function store(Request $request)
     {
 
@@ -40,7 +57,9 @@ class RelationshipController extends Controller
             $relation->employee_id = $request->employee; 
             $relation->departament_id = $request->departament; 
             $relation->schedule_id = $request->schedule;
-            $relation->turn = $request->turn;
+            if($request->turn == "on"){
+                $relation->turn = true;
+            }
 
             $relation->save();
             $relation->save = true;
@@ -73,17 +92,20 @@ class RelationshipController extends Controller
             $relation->employee_id = $request->employee; 
             $relation->departament_id = $request->departament; 
             $relation->schedule_id = $request->schedule;
-            $relation->turn = $request->turn;
-
+            if($request->turn == "on"){
+                $relation->turn = true;
+            }
             $relation->save();
 
             $relation->save = true;
+
             $evento = new Event();
             $evento->evento = "Se actualizó la relación con el ID " . $relation->id;
             $evento->tipo = "Info";
             $evento->save();
+
             return $relation;  
-            return $relation;        
+      
         }
 
         $relation->save = false;
