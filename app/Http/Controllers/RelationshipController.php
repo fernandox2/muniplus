@@ -94,7 +94,10 @@ class RelationshipController extends Controller
             $relation->schedule_id = $request->schedule;
             if($request->turn == "on"){
                 $relation->turn = true;
+            }else{
+                $relation->turn = false;
             }
+
             $relation->save();
 
             $relation->save = true;

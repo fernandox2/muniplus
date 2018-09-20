@@ -1,17 +1,32 @@
 <template>
   <div class="content">
     <div class="turn">
-      <nuevo @new="addturn"></nuevo>
 
-        <form class="form-inline md-form form-sm">       
-            <i class="fa fa-search" aria-hidden="true"></i>
-            <input class="form-control form-control-sm ml-3 w-75 search" type="text" v-model="search" placeholder="Buscar ..." aria-label="Search" accept=""input="resetPagination()">
-            <select v-model="length" @change="resetPagination()" class="form-control browser-default select">
-              <option value="5">5</option>
-              <option value="10">10</option>
-              <option value="20">20</option>
-          </select>
-        </form>
+        <div class="md-layout">
+
+          <div class="md-layout-item md-medium-size-50 md-small-size-100 md-xsmall-size-100"><nuevo @new="addTurn"></nuevo></div>
+
+          <div class="md-layout-item md-medium-size-50 md-small-size-100 md-xsmall-size-100">
+            
+            <md-field class="largo pull-right">
+              <md-select v-model="length" @change="resetPagination()">
+                <md-option value="5">5</md-option>
+                <md-option value="10">10</md-option>
+                <md-option value="20">20</md-option>
+                <md-option value="30">30</md-option>
+              </md-select>
+            </md-field>
+
+            <md-field class="buscar pull-right">
+              <label>Busca Aquí</label>
+              <md-input v-model="search" v-on:change="resetPagination"></md-input>
+            </md-field>
+
+          </div>
+
+        </div>
+
+
 
       <datatable :columns="columns" :sortKey="sortKey" :sortOrders="sortOrders" @sort="sortBy">
           <TableTurn
@@ -28,6 +43,54 @@
                     @next="++pagination.currentPage">
         </pagination>
   </div>
+       <md-dialog :md-active.sync="showDialog">
+      <md-dialog-title>Datos del Turno</md-dialog-title>
+
+      <form novalidate class="md-layout" v-on:submit.prevent="editTurn()">
+          
+        <div class="md-layout-item md-small-size-100 md-size-100">
+          <div class="form-group">
+             <label for="relationship">Relación Existente: </label><br>
+             <select v-model="relationship" class="form-control" v-on:change="">
+             <option value="0">Seleccione una opción</option>
+             <option v-for="option in relationships" v-bind:value="option.id">
+                 {{ option.nameEmployee }} - {{ option.nameDepartament }}
+             </option>
+             </select>
+          </div>
+        </div>
+
+        <div class="md-layout-item md-small-size-100 md-size-100">
+          <div class="form-group">
+             <label for="schedule">Horario: </label><br>
+             <select v-model="schedule" class="form-control" v-on:change="">
+             <option value="0">Seleccione una opción</option>
+             <option v-for="option in schedules" v-bind:value="option.id">
+                 {{ option.nombre }}
+             </option>
+             </select>
+          </div>
+        </div>
+
+          <div class="md-layout-item md-small-size-100 md-size-100">
+            <label for="inicio">Fecha Inicio</label>
+            <md-field>
+              <md-input v-model="inicio" type="date"></md-input>
+            </md-field>
+          </div>
+
+          <div class="md-layout-item md-small-size-100 md-size-100">
+            <label for="fin">Fecha Fin</label>
+            <md-field>
+              <md-input v-model="fin" type="date"></md-input>
+            </md-field>
+          </div>
+
+          <md-button class="md-primary" @click="showDialog = false">Cerrar</md-button>
+          <md-button type="submit" class="md-success">Guardar</md-button>
+
+        </form>
+    </md-dialog>
 </div>
 </template>
 <script>
@@ -45,6 +108,8 @@ export default{
     name: 'DialogCustom',
     created(){
       this.getTurns();
+      axios.get('/RelacionesConTurnos').then(response => { this.relationships = response.data; }).catch(errors => { console.log(errors); })
+      axios.get('/schedules').then(response => { this.schedules = response.data; }).catch(errors => { console.log(errors); })
     },
     data(){
         let sortOrders = {};
@@ -70,13 +135,15 @@ export default{
           length: 5,
           search: '',
           showDialog: false,
+          schedules:[],
+          schedule:0,
+          relationships:[],
+          relationship:0,
+          inicio:null,
+          fin:null,
           id:0,
-          nombre:'',
-          rut:'',
-          correo:'',
-          codigo:'',
           tableData: {
-                client: true,
+            client: true,
           },
           pagination: {
                 currentPage: 1,
@@ -96,45 +163,45 @@ export default{
     nuevo: NewTurn
   },
   methods: {
-        addturn(empleado) {
-            this.turns.push(empleado);
+        addTurn(turno) {
+            this.turns.push(turno);
         },
-        deleteturn(empleado){
-            var index = this.turns.indexOf(empleado);
+        deleteTurn(turno){
+            var index = this.turns.indexOf(turno);
             this.turns.splice(index, 1);
         },
-        actualizarturn(empleado){
-          this.turn = empleado;
-          this.nombre = empleado.nombre;
-          this.rut = empleado.rut;
-          this.correo = empleado.correo;
-          this.codigo = empleado.codigo;
-          this.id = empleado.id;
+        actualizarTurn(turno){
+          this.turn = turno;
+          this.schedule = turno.schedule_id;
+          this.relationship = turno.relationship_id;
+          this.inicio = turno.inicio;
+          this.fin = turno.fin;
+          this.id = turno.id;
           this.showDialog = true;
         },
-        editturn(){
+        editTurn(){
           const params = {
           id: this.id,
-          nombre: this.nombre,
-          rut: this.rut,
-          correo: this.correo,
-          codigo: this.codigo,
+          relationship: this.relationship,
+          schedule: this.schedule,
+          inicio: this.inicio,
+          fin: this.fin,
         };
           var index = this.turns.indexOf(this.turn);
           axios.put(`/turns/${this.id}`, params).then((response) => {
               this.turn = response.data;
               this.turns[index] = this.turn;
-              this.getturns();
+              this.getTurns();
               this.id = 0;
-              this.nombre = "";
-              this.rut = "";
-              this.correo = "";
-              this.codigo = "";
+              this.schedule = 0;
+              this.relationship = 0;
+              this.inicio = null;
+              this.fin = null;
               this.showDialog = false;
               if(this.turn.save){
                 this.$notify(
                   {
-                    message: 'Se actualizó correctamente el funcionario:<b> ' + this.turn.nombre + '</b>',
+                    message: 'El registro se modificó correctamente',
                     icon: 'done',
                     horizontalAlign: 'right',
                     verticalAlign: 'top',
@@ -221,22 +288,17 @@ export default{
 </script>
 
 <style lang="scss" scoped>
-  .turn {
-    padding-left: 20px;
-    padding-right: 20px; 
-  }
-  .md-dialog{
-        padding:20px;
+
+
+  .largo{
+    width:50px !important;
+    display:inline-block !important;
+    margin-left:10px !important;
   }
 
-  .search{
-    max-width:350px;
-    display:inline-block !important; 
-  }
-
-  .select{
-    max-width:30px;
-    display:inline-block !important; 
+  .buscar{
+    width:350px !important;
+    display:inline-block !important;
   }
 
 </style>

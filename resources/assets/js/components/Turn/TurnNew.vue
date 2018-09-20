@@ -90,8 +90,6 @@ export default{
                 
                 const turno = response.data;
 
-                console.log(turno);
-
                 if(turno.save)
                 {
                   this.showDialog = false;
@@ -108,7 +106,7 @@ export default{
                       verticalAlign: 'top',
                       type: 'success'
                     })
-                    //this.$emit('new', empleado);
+                    this.$emit('new', turno);
                 }else{
 
                   this.$notify(

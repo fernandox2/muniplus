@@ -65,7 +65,7 @@
             </div>
           </div>
 
-          <md-button class="md-primary close" @click="showDialog = false">Close</md-button>
+          <md-button class="md-primary" @click="showDialog = false">Cerrar</md-button>
           <md-button type="button" @click="newSchedule" class="md-raised md-success">Guardar</md-button>
         </form>
 

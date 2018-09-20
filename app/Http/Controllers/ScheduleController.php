@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Schedule;
+use App\Event;
 use App\Program;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -57,10 +58,12 @@ class ScheduleController extends Controller
                 }
             }
             $horario->save = true;
+
             $evento = new Event();
             $evento->evento = "Se creó correctamente el horario " . $horario->nombre;
             $evento->tipo = "Info";
             $evento->save();
+
             return $horario;
         }
         $horario->save = false;

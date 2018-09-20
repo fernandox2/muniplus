@@ -4,20 +4,29 @@
 
     <div class="relationship">
 
+        <div class="md-layout">
 
-        <nuevo @new="addRelationship"></nuevo>
+          <div class="md-layout-item md-medium-size-50 md-small-size-100 md-xsmall-size-100"><nuevo @new="addRelationship"></nuevo></div>
 
+          <div class="md-layout-item md-medium-size-50 md-small-size-100 md-xsmall-size-100">
+            
+            <md-field class="largo pull-right">
+              <md-select v-model="length" @change="resetPagination()">
+                <md-option value="5">5</md-option>
+                <md-option value="10">10</md-option>
+                <md-option value="20">20</md-option>
+                <md-option value="30">30</md-option>
+              </md-select>
+            </md-field>
 
+            <md-field class="buscar pull-right">
+              <label>Busca Aquí</label>
+              <md-input v-model="search" v-on:change="resetPagination"></md-input>
+            </md-field>
 
-        <form class="form-inline md-form form-sm">       
-            <i class="fa fa-search" aria-hidden="true"></i>
-            <input class="form-control form-control-sm ml-3 w-75 search" type="text" v-model="search" placeholder="Buscar ..." aria-label="Search" accept=""input="resetPagination()">
-            <select v-model="length" @change="resetPagination()" class="form-control browser-default select">
-              <option value="5">5</option>
-              <option value="10">10</option>
-              <option value="20">20</option>
-          </select>
-        </form>
+          </div>
+
+        </div>
 
       <datatable :columns="columns" :sortKey="sortKey" :sortOrders="sortOrders" @sort="sortBy">
 
@@ -209,7 +218,12 @@ export default{
       this.employee = relationship.employee_id;
       this.departament = relationship.departament_id;
       this.schedule = relationship.schedule_id;
-      this.turn = relationship.turn;
+      if(relationship.turn == 1){
+        this.turn = "on";
+      }
+      if(relationship.turn == 0){
+        this.turn = "off";
+      }    
       this.id = relationship.id;
 
       this.showDialog = true;
@@ -356,14 +370,16 @@ export default{
     width:100% !important;
   }
 
-  .search{
-    max-width:350px;
-    display:inline-block !important; 
+
+  .largo{
+    width:50px !important;
+    display:inline-block !important;
+    margin-left:10px !important;
   }
 
-  .select{
-    max-width:30px;
-    display:inline-block !important; 
+  .buscar{
+    width:350px !important;
+    display:inline-block !important;
   }
 
   .scrollbar{
