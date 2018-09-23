@@ -13,5 +13,7 @@ class DatabaseSeeder extends Seeder
     {
            $this->call(TypeMarkTableSeeder::class);
            $this->call(DaysTableSeeder::class);
+           $this->call(PermissionsTableSeeder::class);
+           $this->call(RolTableSeeder::class);
     }
 }

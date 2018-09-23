@@ -15,10 +15,6 @@ Route::get('/', function () {
     return view('index');
 });
 
-Auth::routes();
-
-Route::get('/home', 'HomeController@index')->name('home');
-
 Route::apiResource('/employees','EmployeeController');
 
 Route::get('/employees/departament/{codigo}', 'EmployeeController@employeebydepartament');
@@ -57,4 +53,14 @@ Route::get('/marks/errors/five', 'MarkController@LastFiveEventError');
 
 Route::get('/marks/info/five', 'MarkController@LastFiveEventInfo');
 
+Auth::routes();
 
+Route::get('/home', 'HomeController@index')->name('home');
+
+Route::middleware(['auth'])->group(function(){
+
+	//Departamentos
+	Route::get('departaments', 'DepartamentController@index')->name('departaments.index')
+		->middleware('permission:departaments.index');
+
+});
