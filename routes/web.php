@@ -52,15 +52,3 @@ Route::get('/marks/errors/today', 'MarkController@ErrorsToDay');
 Route::get('/marks/errors/five', 'MarkController@LastFiveEventError');
 
 Route::get('/marks/info/five', 'MarkController@LastFiveEventInfo');
-
-Auth::routes();
-
-Route::get('/home', 'HomeController@index')->name('home');
-
-Route::middleware(['auth'])->group(function(){
-
-	//Departamentos
-	Route::get('departaments', 'DepartamentController@index')->name('departaments.index')
-		->middleware('permission:departaments.index');
-
-});
