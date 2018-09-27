@@ -13,5 +13,6 @@ class DatabaseSeeder extends Seeder
     {
            $this->call(TypeMarkTableSeeder::class);
            $this->call(DaysTableSeeder::class);
+           $this->call(TypeExceptionTableSeeder::class);
     }
 }
