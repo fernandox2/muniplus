@@ -14,6 +14,7 @@ import Schedule from '@/pages/Schedule.vue'
 import Relationship from '@/pages/Relationship.vue'
 import Assistance from '@/pages/Assistance.vue'
 import Turn from '@/pages/Turn.vue'
+import Exception from '@/pages/Exception.vue'
 
 const routes = [
   {
@@ -35,6 +36,11 @@ const routes = [
         path: 'departament',
         name: 'Administración de Departamentos',
         component: Departament
+      },
+      {
+        path: 'exception',
+        name: 'Administración de Excepciones',
+        component: Exception
       },
       {
         path: 'schedule',

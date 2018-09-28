@@ -31,6 +31,11 @@ import TableAssistance from './Assistance/AssistanceTable.vue'
 import TableTurn from './Turn/TurnTable.vue'
 import NewTurn from './Turn/TurnNew.vue'
 
+//Exception
+import TableException from './Exception/ExceptionTable.vue'
+import NewException from './Exception/ExceptionNew.vue'
+
+
 export {
   ChartCard,
   NavTabsCard,
@@ -49,5 +54,7 @@ export {
   TableAssistance,
   TableEventInfo,
   TableTurn,
-  NewTurn
+  NewTurn,
+  TableException,
+  NewException
 }

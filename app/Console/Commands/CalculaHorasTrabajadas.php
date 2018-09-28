@@ -40,6 +40,10 @@ class CalculaHorasTrabajadas extends Command
 
             if(isset($con->entrada1) && isset($con->salida2)){
 
+                $employee = DB::table('employees')
+                ->where('codigo',$con->codigo)
+                ->first();
+
                 $horas_trabajadas = resta($con->entrada1, $con->salida2);
                 
                 $cons = Assistance::find($con->id);
@@ -48,7 +52,7 @@ class CalculaHorasTrabajadas extends Command
                 $cons->save();
 
                 $evento = new Event();
-                $evento->evento = "Se calcularon ". $horas_trabajadas . " de trabajo para el consolidado " . $con->id;
+                $evento->evento = "Se calcularon ". $horas_trabajadas . " de trabajo para el funcionario " . $employee->nombre . " en el consolidado de fecha " . $con->fecha;
                 $evento->tipo = "Info";
                 $evento->save();
 
@@ -61,7 +65,7 @@ class CalculaHorasTrabajadas extends Command
                 $cons->save();
                 
                 $evento = new Event();
-                $evento->evento = "Se calcularon ". $horas_trabajadas . " de trabajo para el consolidado " . $con->id;
+                $evento->evento = "Se calcularon ". $horas_trabajadas . " de trabajo para el funcionario " . $employee->nombre . " en el consolidado de fecha " . $con->fecha;
                 $evento->tipo = "Info";
                 $evento->save();
 
@@ -74,18 +78,14 @@ class CalculaHorasTrabajadas extends Command
                 $cons->save();
                 
                 $evento = new Event();
-                $evento->evento = "Se calcularon ". $horas_trabajadas . " de trabajo para el consolidado " . $con->id;
+                $evento->evento = "Se calcularon ". $horas_trabajadas . " de trabajo para el funcionario " . $employee->nombre . " en el consolidado de fecha " . $con->fecha;
                 $evento->tipo = "Info";
                 $evento->save();
 
             }else{
                 
-                $employee = DB::table('employees')
-                ->where('codigo',$con->codigo)
-                ->first();
-
                 $cons = Assistance::find($con->id);
-                $cons->comentario = "El funcionario " . $employee->nombre ." no tiene todas sus marcas hoy";
+                $cons->comentario = "El funcionario " . $employee->nombre ." no tiene todas sus marcas hoy " . $con->fecha;
                 $cons->calculada = true;
                 $cons->save();
 
@@ -93,11 +93,7 @@ class CalculaHorasTrabajadas extends Command
                 $evento->evento = "El funcionario " . $employee->nombre ." no tiene todas sus marcas hoy " . $con->fecha;
                 $evento->tipo = "Error";
                 $evento->save();
-                
-                $evento = new Event();
-                $evento->evento = "Se calcularon ". $horas_trabajadas . " de trabajo para el consolidado " . $con->id;
-                $evento->tipo = "Info";
-                $evento->save();
+
             }
 
             // Envia correo con asistencia el día

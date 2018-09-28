@@ -52,3 +52,7 @@ Route::get('/marks/errors/today', 'MarkController@ErrorsToDay');
 Route::get('/marks/errors/five', 'MarkController@LastFiveEventError');
 
 Route::get('/marks/info/five', 'MarkController@LastFiveEventInfo');
+
+Route::apiResource('/exceptions','ExceptionController');
+
+Route::get('/tiposdeexcepciones', 'ExceptionController@tipos');
