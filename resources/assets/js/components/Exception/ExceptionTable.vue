@@ -1,9 +1,9 @@
 <template>
       <md-table-row class="text-center">
-        <md-table-cell>{{ exception.funcionario }}</md-table-cell>
+        <md-table-cell>{{ exception.nombreFuncionario }}</md-table-cell>
+        <md-table-cell>{{ exception.nombreTipo }}</md-table-cell>
         <md-table-cell>{{ exception.fecha_inicio }}</md-table-cell>
         <md-table-cell>{{ exception.fecha_fin }}</md-table-cell>
-        <md-table-cell>{{ exception.tipo }}</md-table-cell>
         <md-table-cell>{{ exception.glosa }}</md-table-cell>
         <md-table-cell><p class="centrar">
         <button v-on:click.prevent="onClickEdit()" type="button" class="md-button md-just-icon md-simple md-primary md-theme-default"><div class="md-ripple"><div class="md-button-content"><i class="md-icon md-icon-font md-theme-default">edit</i> </div> <span></span></div></button>
@@ -37,10 +37,6 @@ export default {
                     this.$emit('delete');
                 });
 
-                }
-                else 
-                {
-                    
                 }
             },
             onClickEdit() {

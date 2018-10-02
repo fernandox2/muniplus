@@ -1,10 +1,12 @@
 <template>
   <div class="content">
-    <div class="turn">
+    <div class="exception">
 
         <div class="md-layout">
 
-          <div class="md-layout-item md-medium-size-50 md-small-size-100 md-xsmall-size-100"><nuevo @new="addTurn"></nuevo></div>
+          <div class="md-layout-item md-medium-size-50 md-small-size-100 md-xsmall-size-100">
+            <nuevo @new="addException"></nuevo>
+          </div>
 
           <div class="md-layout-item md-medium-size-50 md-small-size-100 md-xsmall-size-100">
             
@@ -26,16 +28,14 @@
 
         </div>
 
-
-
       <datatable :columns="columns" :sortKey="sortKey" :sortOrders="sortOrders" @sort="sortBy">
-          <TableTurn
-            v-for="(turn, index) in paginated"
-            :key="turn.id"
-            :turn="turn"
-            @delete="deleteTurn(turn)"
-            @actualizar="actualizarTurn(turn)">
-          </TableTurn>
+          <TableException
+            v-for="(exception, index) in paginated"
+            :key="exception.id"
+            :exception="exception"
+            @delete="deleteException(exception)"
+            @actualizar="actualizarException(exception)">
+          </TableException>
       </datatable>
       <br>
         <pagination :pagination="pagination" :client="true" :filtered="filteredProjects"
@@ -43,54 +43,7 @@
                     @next="++pagination.currentPage">
         </pagination>
   </div>
-       <md-dialog :md-active.sync="showDialog">
-      <md-dialog-title>Datos del Turno</md-dialog-title>
-
-      <form novalidate class="md-layout" v-on:submit.prevent="editTurn()">
-          
-        <div class="md-layout-item md-small-size-100 md-size-100">
-          <div class="form-group">
-             <label for="relationship">Relación Existente: </label><br>
-             <select v-model="relationship" class="form-control" v-on:change="">
-             <option value="0">Seleccione una opción</option>
-             <option v-for="option in relationships" v-bind:value="option.id">
-                 {{ option.nameEmployee }} - {{ option.nameDepartament }}
-             </option>
-             </select>
-          </div>
-        </div>
-
-        <div class="md-layout-item md-small-size-100 md-size-100">
-          <div class="form-group">
-             <label for="schedule">Horario: </label><br>
-             <select v-model="schedule" class="form-control" v-on:change="">
-             <option value="0">Seleccione una opción</option>
-             <option v-for="option in schedules" v-bind:value="option.id">
-                 {{ option.nombre }}
-             </option>
-             </select>
-          </div>
-        </div>
-
-          <div class="md-layout-item md-small-size-100 md-size-100">
-            <label for="inicio">Fecha Inicio</label>
-            <md-field>
-              <md-input v-model="inicio" type="date"></md-input>
-            </md-field>
-          </div>
-
-          <div class="md-layout-item md-small-size-100 md-size-100">
-            <label for="fin">Fecha Fin</label>
-            <md-field>
-              <md-input v-model="fin" type="date"></md-input>
-            </md-field>
-          </div>
-
-          <md-button class="md-primary" @click="showDialog = false">Cerrar</md-button>
-          <md-button type="submit" class="md-success">Guardar</md-button>
-
-        </form>
-    </md-dialog>
+       
 </div>
 </template>
 <script>
@@ -100,27 +53,24 @@ import Pagination from '../Pagination.vue';
 
 import {
   NewException,
-  TableTurn,
-  NewTurn,
+  TableException,
   OrderedTable
 } from '@/components'
 
 export default{
-    name: 'DialogCustom',
+    name: 'Exceptions',
     created(){
-      this.getTurns();
-      axios.get('/RelacionesConTurnos').then(response => { this.relationships = response.data; }).catch(errors => { console.log(errors); })
-      axios.get('/schedules').then(response => { this.schedules = response.data; }).catch(errors => { console.log(errors); })
+      this.getExcepciones();
     },
     data(){
         let sortOrders = {};
 
         let columns = [
-            {width: '30%', label: 'Nombre Funcionario', name: 'nameEmployee'},
-            {width: '30%', label: 'Departamento', name: 'nameDepartament'},
-            {width: '19%', label: 'Horario', name: 'schedule'},
-            {width: '7%', label: 'Fecha Inicio', name: 'inicio'},
-            {width: '7%', label: 'Fecha Fin', name: 'fin'},
+            {width: '20%', label: 'Funcionario', name: 'nombreFuncionario'},
+            {width: '15%', label: 'Tipo Excepcion', name: 'nombreTipo'},
+            {width: '10%', label: 'Inicio', name: 'fecha_inicio'},
+            {width: '10%', label: 'Fin', name: 'fecha_fin'},
+            {width: '33%', label: 'Glosa', name: 'glosa'},
             {width: '7%', label: 'Acciones', name: 'acciones'}
         ];
 
@@ -128,20 +78,14 @@ export default{
            sortOrders[column.name] = -1;
         });
         return {
-          turns:[],
-          turn:'',
+          exceptions:[],
+          exception:'',
           columns: columns,
           sortKey: '',
           sortOrders: sortOrders,
           length: 5,
           search: '',
           showDialog: false,
-          schedules:[],
-          schedule:0,
-          relationships:[],
-          relationship:0,
-          inicio:null,
-          fin:null,
           id:0,
           tableData: {
             client: true,
@@ -158,29 +102,29 @@ export default{
     },
   components: {
     OrderedTable,
-    TableTurn,
+    TableException,
     datatable: Datatable, 
     pagination: Pagination,
     nuevo: NewException
   },
   methods: {
-        addTurn(turno) {
-            this.turns.push(turno);
+        addException(exception) {
+            this.exceptions.push(exception);
         },
-        deleteTurn(turno){
-            var index = this.turns.indexOf(turno);
-            this.turns.splice(index, 1);
+        deleteexception(exceptiono){
+            var index = this.exceptions.indexOf(exceptiono);
+            this.exceptions.splice(index, 1);
         },
-        actualizarTurn(turno){
-          this.turn = turno;
-          this.schedule = turno.schedule_id;
-          this.relationship = turno.relationship_id;
-          this.inicio = turno.inicio;
-          this.fin = turno.fin;
-          this.id = turno.id;
+        actualizarexception(exceptiono){
+          this.exception = exceptiono;
+          this.schedule = exceptiono.schedule_id;
+          this.relationship = exceptiono.relationship_id;
+          this.inicio = exceptiono.inicio;
+          this.fin = exceptiono.fin;
+          this.id = exceptiono.id;
           this.showDialog = true;
         },
-        editTurn(){
+        editexception(){
           const params = {
           id: this.id,
           relationship: this.relationship,
@@ -188,18 +132,18 @@ export default{
           inicio: this.inicio,
           fin: this.fin,
         };
-          var index = this.turns.indexOf(this.turn);
-          axios.put(`/turns/${this.id}`, params).then((response) => {
-              this.turn = response.data;
-              this.turns[index] = this.turn;
-              this.getTurns();
+          var index = this.exceptions.indexOf(this.exception);
+          axios.put(`/exceptions/${this.id}`, params).then((response) => {
+              this.exception = response.data;
+              this.exceptions[index] = this.exception;
+              this.getexceptions();
               this.id = 0;
               this.schedule = 0;
               this.relationship = 0;
               this.inicio = null;
               this.fin = null;
               this.showDialog = false;
-              if(this.turn.save){
+              if(this.exception.save){
                 this.$notify(
                   {
                     message: 'El registro se modificó correctamente',
@@ -221,11 +165,11 @@ export default{
 
           });
         },
-        getTurns(url = '/turns') {
+        getExcepciones(url = '/exceptions') {
                 axios.get(url, {params: this.tableData})
                     .then(response => {
-                        this.turns = response.data;
-                        this.pagination.total = this.turns.length;
+                        this.exceptions = response.data;
+                        this.pagination.total = this.exceptions.length;
                     })
                     .catch(errors => {
                         console.log(errors);
@@ -255,9 +199,9 @@ export default{
         },
     computed: {
         filteredProjects() {
-            let turns = this.turns;
+            let exceptions = this.exceptions;
             if (this.search) {
-                turns = turns.filter((row) => {
+                exceptions = exceptions.filter((row) => {
                     return Object.keys(row).some((key) => {
                         return String(row[key]).toLowerCase().indexOf(this.search.toLowerCase()) > -1;
                     })
@@ -266,8 +210,8 @@ export default{
             let sortKey = this.sortKey;
             let order = this.sortOrders[sortKey] || 1;
             if (sortKey) {
-                turns = turns.slice().sort((a, b) => {
-                    let index = this.getIndex(this.columns, 'name', sortKey);
+                exceptions = exceptions.slice().sort((a, b) => {
+                    let index = this.getIndex(this.columns, 'created_at', sortKey);
                     a = String(a[sortKey]).toLowerCase();
                     b = String(b[sortKey]).toLowerCase();
                     if (this.columns[index].type && this.columns[index].type === 'date') {
@@ -279,7 +223,7 @@ export default{
                     }
                 });
             }
-            return turns;
+            return exceptions;
         },
         paginated() {
             return this.paginate(this.filteredProjects, this.length, this.pagination.currentPage);

@@ -22,7 +22,7 @@
         <div class="md-layout-item md-small-size-100 md-size-100">
           <div class="form-group">
              <label for="tipo">Tipo de Excepción: </label><br>
-             <select v-model="tipo" class="form-control" v-on:change="">
+             <select v-model="tipo" class="form-control" v-on:change="cambiarTipo">
              <option value="0">Seleccione una opción</option>
              <option v-for="option in tipos" v-bind:value="option.id">
                  {{ option.name }}
@@ -30,6 +30,7 @@
              </select>
           </div>
         </div>
+
 
           <div class="md-layout-item md-small-size-100 md-size-100">
             <label for="inicio">Fecha Inicio</label>
@@ -44,6 +45,18 @@
               <md-input v-model="fin" type="date"></md-input>
             </md-field>
           </div>
+
+
+        <div class="md-layout-item md-small-size-100 md-size-100" v-if="administrativo">
+              <md-radio v-model="radio" :value="true">Agregar 1/2 Día</md-radio>
+              <div class="form-group">
+              <select v-model="mediodia" class="form-control">
+                <option value="0">Seleccionar Jornada</option>
+                <option value="1">Jornada Mañana</option>
+                <option value="2">Jornada Tarde</option>
+             </select>
+           </div>
+        </div>
 
           <div class="md-layout-item md-small-size-100 md-size-100">
             <md-field>
@@ -77,6 +90,7 @@ export default{
     data(){
       return {
           showDialog: false,
+          administrativo:false,
           glosa:'',
           relationship: 0,
           tipo: 0,
@@ -84,6 +98,8 @@ export default{
           tipos:[],
           inicio:'',
           fin:'',
+          radio:false,
+          mediodia:0
         }
     },
       validations: {
@@ -93,6 +109,14 @@ export default{
         }
     },
       methods: {
+        cambiarTipo(){
+          if(this.tipo == 1)
+          {
+            this.administrativo = true;
+          }else{
+            this.administrativo = false;
+          }
+        },
         newException(){
             if (!this.$v.$invalid) {
 
@@ -102,7 +126,9 @@ export default{
                 tipo: this.tipo,
                 inicio: this.inicio,
                 fin: this.fin,
-                glosa: this.glosa
+                glosa: this.glosa,
+                radio: this.radio,
+                mediodia: this.mediodia
 
               };
 
@@ -110,28 +136,33 @@ export default{
                 
                 const exception = response.data;
 
+                alert(exception);
+
                 this.glosa = "";
                 this.inicio = null;
                 this.fin = null;
                 this.relationship = 0;
                 this.tipo = 0;
+                this.administrativo = false;
+                this.mediodia = 0;
+                this.radio = false;
 
                 if(exception.save)
                 {
                   this.showDialog = false;
                   this.$notify(
                     {
-                      message: 'Se creo correctamente el funcionario:<b> ' + exception.nombre + '</b>',
+                      message: 'Se creo correctamente la excepción para el funcionario:<b> ' + exception.nombre + '</b>',
                       icon: 'done',
                       horizontalAlign: 'right',
                       verticalAlign: 'top',
                       type: 'success'
                     })
-                    this.$emit('new', exception);
+                    //this.$emit('new', exception);
                 }else{
                   this.$notify(
                     {
-                      message: 'No se creo el funcionario. Revise los datos nuevamente',
+                      message: 'Error al crear la excepción para el funcionario ' + exception.nombre,
                       icon: 'error',
                       horizontalAlign: 'right',
                       verticalAlign: 'top',
@@ -173,5 +204,9 @@ export default{
 
   label{
     font-weight: bold;
+  }
+
+  form{
+    overflow: auto !important;
   }
 </style>
