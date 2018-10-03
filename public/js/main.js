@@ -15592,7 +15592,6 @@ if (false) {(function () {
 //
 //
 //
-//
 
 /* harmony default export */ __webpack_exports__["a"] = ({
     props: ['exception'],
@@ -15617,9 +15616,6 @@ if (false) {(function () {
                     _this.$emit('delete');
                 });
             }
-        },
-        onClickEdit: function onClickEdit() {
-            this.$emit('actualizar');
         }
     }
 });
@@ -15781,8 +15777,6 @@ if (false) {(function () {
 
           var exception = response.data;
 
-          alert(exception);
-
           _this2.glosa = "";
           _this2.inicio = null;
           _this2.fin = null;
@@ -15795,16 +15789,16 @@ if (false) {(function () {
           if (exception.save) {
             _this2.showDialog = false;
             _this2.$notify({
-              message: 'Se creo correctamente la excepción para el funcionario:<b> ' + exception.nombre + '</b>',
+              message: 'Se creo correctamente la excepción para el funcionario:<b> ' + exception.nombreFuncionario + '</b>',
               icon: 'done',
               horizontalAlign: 'right',
               verticalAlign: 'top',
               type: 'success'
             });
-            //this.$emit('new', exception);
+            _this2.$emit('new', exception);
           } else {
             _this2.$notify({
-              message: 'Error al crear la excepción para el funcionario ' + exception.nombre,
+              message: 'Error al crear la excepción para el funcionario ' + exception.nombreFuncionario,
               icon: 'error',
               horizontalAlign: 'right',
               verticalAlign: 'top',
@@ -18838,8 +18832,8 @@ var St=function(){function t(){this.pos=0,this.bufferLength=0,this.eof=!1,this.b
         addException: function addException(exception) {
             this.exceptions.push(exception);
         },
-        deleteexception: function deleteexception(exceptiono) {
-            var index = this.exceptions.indexOf(exceptiono);
+        deleteException: function deleteException(exception) {
+            var index = this.exceptions.indexOf(exception);
             this.exceptions.splice(index, 1);
         },
         actualizarexception: function actualizarexception(exceptiono) {
@@ -50753,34 +50747,6 @@ var render = function() {
       _vm._v(" "),
       _c("md-table-cell", [
         _c("p", { staticClass: "centrar" }, [
-          _c(
-            "button",
-            {
-              staticClass:
-                "md-button md-just-icon md-simple md-primary md-theme-default",
-              attrs: { type: "button" },
-              on: {
-                click: function($event) {
-                  $event.preventDefault()
-                  _vm.onClickEdit()
-                }
-              }
-            },
-            [
-              _c("div", { staticClass: "md-ripple" }, [
-                _c("div", { staticClass: "md-button-content" }, [
-                  _c(
-                    "i",
-                    { staticClass: "md-icon md-icon-font md-theme-default" },
-                    [_vm._v("edit")]
-                  )
-                ]),
-                _vm._v(" "),
-                _c("span")
-              ])
-            ]
-          ),
-          _vm._v(" "),
           _c(
             "button",
             {

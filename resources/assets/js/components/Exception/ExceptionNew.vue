@@ -136,8 +136,6 @@ export default{
                 
                 const exception = response.data;
 
-                alert(exception);
-
                 this.glosa = "";
                 this.inicio = null;
                 this.fin = null;
@@ -152,17 +150,17 @@ export default{
                   this.showDialog = false;
                   this.$notify(
                     {
-                      message: 'Se creo correctamente la excepción para el funcionario:<b> ' + exception.nombre + '</b>',
+                      message: 'Se creo correctamente la excepción para el funcionario:<b> ' + exception.nombreFuncionario + '</b>',
                       icon: 'done',
                       horizontalAlign: 'right',
                       verticalAlign: 'top',
                       type: 'success'
                     })
-                    //this.$emit('new', exception);
+                    this.$emit('new', exception);
                 }else{
                   this.$notify(
                     {
-                      message: 'Error al crear la excepción para el funcionario ' + exception.nombre,
+                      message: 'Error al crear la excepción para el funcionario ' + exception.nombreFuncionario,
                       icon: 'error',
                       horizontalAlign: 'right',
                       verticalAlign: 'top',

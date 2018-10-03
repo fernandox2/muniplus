@@ -24,6 +24,7 @@ class CreateMarksTable extends Migration
             $table->boolean('calculada')->default(false);
             $table->string('checksum')->nullable();
             $table->string('comentario')->nullable();
+            $table->integer('excepcion')->nullable();
             $table->foreign('type_mark_id')->references('id')->on('type_marks');
             $table->timestamps();
         });

@@ -111,8 +111,8 @@ export default{
         addException(exception) {
             this.exceptions.push(exception);
         },
-        deleteexception(exceptiono){
-            var index = this.exceptions.indexOf(exceptiono);
+        deleteException(exception){
+            var index = this.exceptions.indexOf(exception);
             this.exceptions.splice(index, 1);
         },
         actualizarexception(exceptiono){

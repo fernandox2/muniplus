@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Exception;
 use App\Event;
 use App\Mark;
+use App\Assistance;
+use App\TypeException;
 use Illuminate\Support\Facades\DB;
 
 class ExceptionController extends Controller
@@ -47,19 +49,21 @@ class ExceptionController extends Controller
 
            switch ($request->tipo) 
            {
-               
-               case 1:
+
+                case 1:
                 
                 $fechaInicio=strtotime($request->inicio);
                 $fechaFin=strtotime($request->fin);
 
-                for($i=$fechaInicio; $i<=$fechaFin - 86400; $i+=86400)
+                for($i=$fechaInicio; $i<=$fechaFin; $i+=86400)
                 {
                     
-                    $fecha = date('Y-m-j', $i);
-                    list($anio, $mes, $dia) = split('[/.-]', $fecha);
-                    $jd=gregoriantojd($mes,$dia,$anio);
+                    $fecha = date('Y-m-j', $i);          
+                    $valores = explode("-", $fecha);
+                    $jd=gregoriantojd($valores[1],$valores[2],$valores[0]);
                     $dianumero = jddayofweek($jd,0);
+                    if($dianumero == 0){ $dianumero = 7; }
+                
                     $programa = DB::table('programs')
                     ->join('schedules','schedules.id','=','programs.schedule_id')
                     ->join('relationships','relationships.schedule_id','=','schedules.id')
@@ -69,63 +73,133 @@ class ExceptionController extends Controller
                     ->where('programs.dia_id','=',$dianumero)
                     ->first();
 
-                    if(!$programa->isEmpty())
+                    if($i == $fechaFin && $request->radio == true && $request->mediodia != 0 && isset($programa))
                     {
-
-                        if($programa->entrada1 != null)
+                        if($request->mediodia == 1)
                         {
                             $marca1 = new Mark();
                             $marca1->codigo = $funcionario->codigo;
-                            $marca1->type_mark_id = 9;               
-                            $marca1->fecha = $fecha;                 
+                            $marca1->type_mark_id = 9;
                             $marca1->hora = $programa->entrada1;
+                            $marca1->fecha = $fecha;
                             $marca1->dia = $dianumero;
-                            $marca1->comentario = "Permiso Administrativo"
+                            $marca1->excepcion = $exception->id;
+                            $marca1->comentario = "Marca ingresada desde la Excepción N°" . $exception->id;
                             $marca1->save();
-                        }
-                        
-                        if($programa->salida1 != null)
-                        {
+
                             $marca2 = new Mark();
                             $marca2->codigo = $funcionario->codigo;
-                            $marca2->type_mark_id = 9;               
-                            $marca2->fecha = $fecha;                 
+                            $marca2->type_mark_id = 9;
                             $marca2->hora = $programa->salida1;
+                            $marca2->fecha = $fecha;
                             $marca2->dia = $dianumero;
-                            $marca2->comentario = "Permiso Administrativo"
+                            $marca2->excepcion = $exception->id;
+                            $marca2->comentario = "Marca ingresada desde la Excepción N°" . $exception->id;
                             $marca2->save();
-                        }
-
-                        if($programa->entrada2 != null)
+                        }elseif ($request->mediodia == 2) 
                         {
                             $marca1 = new Mark();
                             $marca1->codigo = $funcionario->codigo;
-                            $marca1->type_mark_id = 9;               
-                            $marca1->fecha = $fecha;                 
+                            $marca1->type_mark_id = 9;
                             $marca1->hora = $programa->entrada2;
+                            $marca1->fecha = $fecha;
                             $marca1->dia = $dianumero;
-                            $marca1->comentario = "Permiso Administrativo"
+                            $marca1->excepcion = $exception->id;
+                            $marca1->comentario = "Marca ingresada desde la Excepción N°" . $exception->id;
                             $marca1->save();
-                        }
 
-                        if($programa->salida2 != null)
-                        {
                             $marca2 = new Mark();
                             $marca2->codigo = $funcionario->codigo;
-                            $marca2->type_mark_id = 9;               
-                            $marca2->fecha = $fecha;                 
+                            $marca2->type_mark_id = 9;
                             $marca2->hora = $programa->salida2;
+                            $marca2->fecha = $fecha;
                             $marca2->dia = $dianumero;
-                            $marca2->comentario = "Permiso Administrativo"
-                            $marca2->save();
+                            $marca2->excepcion = $exception->id;
+                            $marca2->comentario = "Marca ingresada desde la Excepción N°" . $exception->id;
+                            $marca2->save(); 
                         }
+                    }elseif(isset($programa))
+                    {
+                        $consolidado = new Assistance();
+                        $consolidado->codigo = $funcionario->codigo;         
+                        $consolidado->fecha = $fecha;                 
+                        $consolidado->entrada1 = $programa->entrada1;
+                        $consolidado->salida1 = $programa->salida1;
+                        $consolidado->entrada2 = $programa->entrada2;
+                        $consolidado->salida2 = $programa->salida2;
+                        $consolidado->calculada = true;
+                        $consolidado->excepcion = $exception->id;
+                        $consolidado->comentario = "Permiso Administrativo. Excepción N°" . $exception->id;
+                        $consolidado->save();
                     }
                 }
+
+                $tipo = TypeException::find($request->tipo);
            
-                $exception->nombre = $funcionario->nombre;
+                $exception->nombreFuncionario = $funcionario->nombre;
+                $exception->nombreTipo = $tipo->name;
+
+                $evento = new Event();
+                $evento->evento = "Se creó una nueva excepción para el funcionario  " . $funcionario->nombre . " con motivo de " . $tipo->name;
+                $evento->tipo = "Info";
+                $evento->save();
 
                 return $exception;
                    break;
+            default:
+                
+                $fechaInicio=strtotime($request->inicio);
+                $fechaFin=strtotime($request->fin);
+
+                for($i=$fechaInicio; $i<=$fechaFin; $i+=86400)
+                {
+                    
+                    $fecha = date('Y-m-j', $i);          
+                    $valores = explode("-", $fecha);
+                    $jd=gregoriantojd($valores[1],$valores[2],$valores[0]);
+                    $dianumero = jddayofweek($jd,0);
+                    if($dianumero == 0){ $dianumero = 7; }
+                
+                    $programa = DB::table('programs')
+                    ->join('schedules','schedules.id','=','programs.schedule_id')
+                    ->join('relationships','relationships.schedule_id','=','schedules.id')
+                    ->join('employees', 'employees.id', '=', 'relationships.employee_id')
+                    ->select('programs.*')
+                    ->where('employees.id','=',$funcionario->id)
+                    ->where('programs.dia_id','=',$dianumero)
+                    ->first();
+
+                    $tipo = TypeException::find($request->tipo);
+
+                    if(isset($programa))
+                    {
+                        $consolidado = new Assistance();
+                        $consolidado->codigo = $funcionario->codigo;         
+                        $consolidado->fecha = $fecha;                 
+                        $consolidado->entrada1 = $programa->entrada1;
+                        $consolidado->salida1 = $programa->salida1;
+                        $consolidado->entrada2 = $programa->entrada2;
+                        $consolidado->salida2 = $programa->salida2;
+                        $consolidado->calculada = true;
+                        $consolidado->excepcion = $exception->id;
+                        $consolidado->comentario = $tipo->name .". Excepción N°" . $exception->id;
+                        $consolidado->save();
+                    }
+                }
+
+                $tipo = TypeException::find($request->tipo);
+          
+                $exception->nombreFuncionario = $funcionario->nombre;
+                $exception->nombreTipo = $tipo->name;
+
+                $evento = new Event();
+                $evento->evento = "Se creó una nueva excepción para el funcionario  " . $funcionario->nombre . " con motivo de " . $tipo->name;
+                $evento->tipo = "Info";
+                $evento->save();
+
+                return $exception;
+                   break;
+                             
            }
 
         }else{
@@ -160,7 +234,16 @@ class ExceptionController extends Controller
 
     public function destroy($id)
     {
-        //
+        $consolidados = DB::table('assistances')
+        ->where('excepcion', '=',$id)
+        ->delete();
+
+        $marcas = DB::table('marks')
+        ->where('excepcion', '=', $id)
+        ->delete();
+
+        $exception = Exception::find($id);
+        $exception->delete();
     }
 
 

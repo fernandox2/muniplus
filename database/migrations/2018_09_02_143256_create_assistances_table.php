@@ -20,6 +20,7 @@ class CreateAssistancesTable extends Migration
             $table->time('horas_trabajadas')->nullable();
             $table->string('comentario')->nullable();
             $table->boolean('calculada')->default(false);
+            $table->integer('excepcion')->nullable();
             $table->timestamps();
         });
     }
